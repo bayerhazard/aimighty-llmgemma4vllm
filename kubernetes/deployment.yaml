@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllmgemma426ba4bnvfp4vision
+  namespace: vllmgemma426ba4bnvfp4vision-aimighty
+  annotations:
+    applications.app.bytetrade.io/entrances: '[{"name":"vllmgemma426ba4bnvfp4vision","host":"vllmgemma426ba4bnvfp4vision","port":8000,"icon":"https://orales-one-market.aamsellem.workers.dev/icons/vllmgemma426ba4bnvfp4vision.png","title":"Gemma 4 26B Vision NVFP4","authLevel":"internal","openMethod":"window"}]'
+    applications.app.bytetrade.io/gpu-inject: "true"
+    applications.app.bytetrade.io/icon: https://orales-one-market.aamsellem.workers.dev/icons/vllmgemma426ba4bnvfp4vision.png
+    applications.app.bytetrade.io/ports: '[]'
+    applications.app.bytetrade.io/required_gpu: 1Gi
+    applications.app.bytetrade.io/source: market
+    applications.app.bytetrade.io/tailscale: '{}'
+    applications.app.bytetrade.io/title: Gemma 4 26B Vision NVFP4
+    applications.app.bytetrade.io/version: "1.0.0"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      io.kompose.service: vllmgemma426ba4bnvfp4vision
+  template:
+    metadata:
+      labels:
+        io.kompose.service: vllmgemma426ba4bnvfp4vision
+    spec:
+      runtimeClassName: nvidia
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: vllm-server
+          image: vllm/vllm-openai:gemma4-0505-cu130
+          imagePullPolicy: IfNotPresent
+          command:
+            - vllm
+            - serve
+          args:
+            - "$(MODEL_NAME)"
+            - --served-model-name
+            - "$(MODEL_ALIAS)"
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8000"
+            - --max-model-len
+            - "$(MAX_MODEL_LEN)"
+            - --gpu-memory-utilization
+            - "$(GPU_MEMORY_UTILIZATION)"
+            - --max-num-seqs
+            - "$(MAX_NUM_SEQS)"
+            - --max-num-batched-tokens
+            - "$(MAX_NUM_BATCHED_TOKENS)"
+            - --dtype
+            - auto
+            - --trust-remote-code
+            - --download-dir
+            - /models
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --enable-prefix-caching
+            - --enable-auto-tool-choice
+            - --tool-call-parser
+            - gemma4
+            - --reasoning-parser
+            - gemma4
+            - --default-chat-template-kwargs
+            - '{"enable_thinking": true}'
+            - --moe-backend
+            - marlin
+          env:
+            - name: HF_HOME
+              value: /models/huggingface
+            - name: VLLM_ATTENTION_BACKEND
+              value: FLASH_ATTN
+            - name: GPU_TYPE
+              value: nvidia
+          envFrom:
+            - configMapRef:
+                name: vllm-env
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "16"
+              memory: 40Gi
+              nvidia.com/gpu: "1"
+              nvidia.com/gpumem: "1024"
+            requests:
+              cpu: "4"
+              memory: 24Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 180
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 5
+            timeoutSeconds: 10
+          volumeMounts:
+            - mountPath: /models
+              name: models
+            - mountPath: /usr/local/lib/python3.12/dist-packages/vllm/model_executor/models/gemma4.py
+              name: gemma4-patch
+              subPath: gemma4.py
+            - mountPath: /usr/local/lib/python3.12/dist-packages/vllm/model_executor/layers/fused_moe/layer.py
+              name: fused-moe-patch
+              subPath: layer.py
+      volumes:
+        - name: models
+          hostPath:
+            path: /olares/rootfs/userspace/pvc-userspace-aimighty-phbiddku99qy4cuz/Data/vllmgemma426ba4bnvfp4vision/models
+            type: DirectoryOrCreate
+        - name: gemma4-patch
+          configMap:
+            name: gemma4-patched
+        - name: fused-moe-patch
+          configMap:
+            name: fused-moe-patched
