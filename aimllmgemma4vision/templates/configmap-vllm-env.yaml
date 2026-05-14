@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gemma4-26b-nvfp4-vision-env
+  namespace: {{ .Release.Namespace }}
+data:
+  MODEL_NAME: {{ .Values.vllmArgs.model }}
+  MODEL_ALIAS: {{ .Values.vllmArgs.servedModelName }}
+  MAX_MODEL_LEN: {{ .Values.vllmArgs.maxModelLen }}
+  MAX_NUM_SEQS: {{ .Values.vllmArgs.maxNumSeqs }}
+  MAX_NUM_BATCHED_TOKENS: {{ .Values.vllmArgs.maxNumBatchedTokens }}
+  GPU_MEMORY_UTILIZATION: {{ .Values.vllmArgs.gpuMemoryUtilization }}

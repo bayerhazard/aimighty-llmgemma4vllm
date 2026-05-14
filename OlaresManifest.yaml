@@ -1,0 +1,83 @@
+---
+olaresManifest.version: '0.10.0'
+olaresManifest.type: app
+apiVersion: 'v2'
+metadata:
+  name: aimllmgemma4vision
+  icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
+  description: Gemma 4 26B A4B Vision via vLLM (NVFP4, 256K context)
+  appid: aimllmgemma4vision
+  title: AIM Gemma 4 26B Vision
+  version: '1.0.0'
+  categories:
+    - AI
+entrances:
+  - name: gemma4-26b-nvfp4-vision
+    port: 8000
+    host: gemma4-26b-nvfp4-vision
+    title: Gemma 4 Vision
+    icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
+    openMethod: window
+    authLevel: internal
+spec:
+  versionName: "1.0.0"
+  upgradeDescription: |
+    v1.0.0: Initial release. Gemma 4 26B A4B Vision NVFP4 on vLLM via Olares Market.
+  fullDescription: |
+    Gemma 4 26B A4B Vision – Multimodales LLM (Text + Image) mit NVFP4-Quantisierung auf vLLM V1 + Marlin MoE Backend.
+
+    **Modell**
+    google/gemma-4-26B-A4B-it (MoE, 25.2B total / 3.8B active per token).
+    Quantisiert von bg-digitalservices auf NVFP4 (NVIDIA 4-bit Weights + Activations, W4A4, ~15 GB).
+    97.6% Qualitätsretention vs BF16 (gemessen: GSM8K, IFEval).
+    256K Token Kontext. Multimodal (Text + Image).
+
+    **Inference Engine**
+    vLLM V1 + Marlin MoE Backend. CUDA 13.1 (RTX 5090 Blackwell SM12.0).
+    fp8_e4m3 KV-Cache. GPU VRAM: ~22.6 GB belegt, ~1.8 GB frei.
+
+    **Performance**
+    - Short (100 tok): 40 tok/s
+    - Medium (500 tok): 103 tok/s
+    - Long (2000 tok): 126 tok/s
+    - Vision (200 tok): 129 tok/s
+    - Optional EAGLE-3 Speculator: ~55-148 tok/s (nicht mit Multimodal kompatibel)
+
+    **Patches**
+    Zwei vLLM-Patches als ConfigMaps eingebaut:
+    - gemma4.py: NVFP4 Scale-Key-Mapping für MoE
+    - fused_moe_layer.py: reduce_results-Parameter-Kompatibilität
+
+    **API**
+    OpenAI-kompatibel: /v1/chat/completions, /v1/models, /health.
+    Vision via base64 data URIs im Chat-Completions-Request.
+
+    **Resource Usage**
+    GPU: ~22.6 GB VRAM belegt (RTX 5090, 24 GB total)
+    RAM: 24-40 GB
+    Disk: 50 GB (Model-Download ~15 GB)
+    CPU: 4-16 Kerne
+
+  developer: Aimighty
+  website: https://github.com/bayerhazard/aimighty-llmgemma4vllm
+  sourceCode: https://github.com/bayerhazard/aimighty-llmgemma4vllm
+  locale:
+    - en-US
+  supportArch:
+    - amd64
+  limitedCpu: 16
+  requiredCpu: 4
+  requiredMemory: 24Gi
+  limitedMemory: 40Gi
+  requiredDisk: 50Gi
+  requiredGpu: 1
+  limitedGpu: 24Gi
+permission:
+  appData: true
+options:
+  apiTimeout: 3600
+  dependencies:
+    - name: olares
+      version: '>=1.12.2-0'
+      type: system
+  allowMultipleInstall: false

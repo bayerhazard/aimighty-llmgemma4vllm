@@ -1,0 +1,17 @@
+# Packaged charts (cause Secret > 1MB limit)
+*.tgz
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Patch backup files
+patches/*.bak

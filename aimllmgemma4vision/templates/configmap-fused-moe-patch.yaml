@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gemma4-26b-nvfp4-vision-fused-moe-patch
+  namespace: {{ .Release.Namespace }}
+data:
+  layer.py: |
+{{ .Files.Get "patches/fused_moe_layer.py" | indent 4 }}

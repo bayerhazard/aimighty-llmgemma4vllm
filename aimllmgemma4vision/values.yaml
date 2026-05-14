@@ -1,0 +1,66 @@
+image:
+  repository: vllm/vllm-openai
+  tag: gemma4-0505-cu130
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+revisionHistoryLimit: 1
+apiPort: 8000
+
+strategy:
+  type: Recreate
+
+resources:
+  limits:
+    cpu: '16'
+    memory: 40Gi
+    nvidia.com/gpu: '1'
+    nvidia.com/gpumem: '1024'
+  requests:
+    cpu: '4'
+    memory: 24Gi
+
+vllmArgs:
+  model: bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4
+  servedModelName: gemma4-26b-nvfp4-vision
+  maxModelLen: '262144'
+  gpuMemoryUtilization: '0.95'
+  maxNumSeqs: '4'
+  maxNumBatchedTokens: '8192'
+  kvCacheDtype: fp8_e4m3
+  moeBackend: marlin
+
+env:
+  HF_HOME: /models/huggingface
+  VLLM_ATTENTION_BACKEND: FLASH_ATTN
+  GPU_TYPE: nvidia
+
+userspace:
+  appData: /olares/rootfs/userspace/pvc-userspace-aimighty-phbiddku99qy4cuz
+
+volumes:
+  models:
+    mountPath: /models
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8000
+  initialDelaySeconds: 180
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 5
+  timeoutSeconds: 10
+
+startupProbe:
+  httpGet:
+    path: /health
+    port: 8000
+  initialDelaySeconds: 30
+  periodSeconds: 15
+  successThreshold: 1
+  failureThreshold: 60
+  timeoutSeconds: 30
+
+service:
+  type: ClusterIP

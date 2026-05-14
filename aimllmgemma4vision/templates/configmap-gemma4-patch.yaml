@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gemma4-26b-nvfp4-vision-gemma4-patch
+  namespace: {{ .Release.Namespace }}
+data:
+  gemma4.py: |
+{{ .Files.Get "patches/gemma4.py" | indent 4 }}
