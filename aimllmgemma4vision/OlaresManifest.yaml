@@ -7,7 +7,7 @@ metadata:
   icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
   description: Gemma 4 26B A4B Vision via vLLM (NVFP4, 256K context)
   title: AIM Gemma 4 26B Vision
-  version: '1.0.1'
+  version: '1.0.2'
   categories:
     - AI
 entrances:
@@ -19,8 +19,9 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '1.0.1'
+  versionName: '1.0.2'
   upgradeDescription: |
+    v1.0.2: Force Olares re-sync after chart was stuck in render-failed state.
     v1.0.1: Version bump to force Olares re-sync after initial release.
     v1.0.0: Initial release. Gemma 4 26B A4B Vision NVFP4 on vLLM via Olares Market.
   fullDescription: |

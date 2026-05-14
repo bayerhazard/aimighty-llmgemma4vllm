@@ -17,7 +17,7 @@ metadata:
     applications.app.bytetrade.io/source: market
     applications.app.bytetrade.io/tailscale: '{}'
     applications.app.bytetrade.io/title: AIM Gemma 4 26B Vision
-    applications.app.bytetrade.io/version: "1.0.1"
+    applications.app.bytetrade.io/version: "1.0.2"
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
