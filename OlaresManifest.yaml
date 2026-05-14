@@ -8,7 +8,7 @@ metadata:
   description: Gemma 4 26B A4B Vision via vLLM (NVFP4, 256K context)
   appid: aimllmgemma4vision
   title: AIM Gemma 4 26B Vision
-  version: '1.0.3'
+  version: '1.0.4'
   categories:
     - AI
 entrances:
@@ -20,7 +20,7 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: "1.0.3"
+  versionName: "1.0.4"
   upgradeDescription: |
     v1.0.2: Force Olares re-sync after chart was stuck in render-failed state.
     v1.0.1: Version bump to force Olares re-sync after initial release.
