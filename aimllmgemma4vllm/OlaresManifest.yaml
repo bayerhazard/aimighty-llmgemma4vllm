@@ -8,7 +8,7 @@ metadata:
   description: Gemma 4 26B A4B QAT-AWQ-INT4 + MTP Speculative Decoding via vLLM — optimized for coding & agentic workflows
   appid: aimllmgemma4vllm
   title: AIM Gemma4 26B-A4B vLLM
-  version: '2.0.7'
+  version: '2.0.8'
   categories:
     - AI
     - Developer Tools
@@ -21,10 +21,10 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '2.0.7'
+  versionName: '2.0.8'
   upgradeDescription: |
+    v2.0.8: Pinned to olares-worker (RTX 5090). Removed --kv-offloading-size + --quantization. FP8-only AWQ at 200k.
     v2.0.7: Removed --kv-offloading-size + --quantization. Clean FP8-only + AWQ at 200k.
-    v2.0.6: Reverted --kv-cache-dtype-skip-layers + --calculate-kv-scales. MAX_MODEL_LEN back to 200000 with FP8-only.
     v2.0.5: Reduce MAX_MODEL_LEN 200000→147500.
     v2.0.4: Bump GPU_MEMORY_UTILIZATION 0.975→0.985.
     v2.0.3: Force re-sync (hash collision fix).
