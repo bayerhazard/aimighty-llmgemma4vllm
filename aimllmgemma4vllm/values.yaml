@@ -1,0 +1,56 @@
+replicaCount: 1
+
+image:
+  repository: vllm/vllm-openai
+  tag: v0.23.0
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: aimllmgemma4vllm
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources:
+  limits:
+    cpu: 16
+    memory: 40Gi
+    nvidia.com/gpu: 1
+    nvidia.com/gpumem: 1024
+  requests:
+    cpu: 4
+    memory: 24Gi
+    nvidia.com/gpu: 1
+
+env:
+  MODEL_NAME: cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4
+  MODEL_ALIAS: gemma-4-26b-mtp-vllm
+  MAX_MODEL_LEN: "200000"
+  GPU_MEMORY_UTILIZATION: "0.975"
+  MAX_NUM_SEQS: "2"
+  MAX_NUM_BATCHED_TOKENS: "8192"
+  DRAFTER_NAME: google/gemma-4-26B-A4B-it-assistant
+  NUM_SPEC_TOKENS: "3"
+  VLLM_EXTRA_ARGS: --generation-config vllm
+
+runtimeClassName: nvidia
+
+probes:
+  startup:
+    path: /health
+    port: 8000
+    failureThreshold: 120
+    periodSeconds: 30
+    initialDelaySeconds: 60
+    timeoutSeconds: 30
+  liveness:
+    path: /health
+    port: 8000
+    failureThreshold: 5
+    periodSeconds: 30
+    initialDelaySeconds: 600
+    timeoutSeconds: 10
+
+userspace:
+  appData: /olares/rootfs/userspace/pvc-userspace-aimighty-hh1h3chfhnoebc1y

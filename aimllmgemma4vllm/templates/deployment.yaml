@@ -1,0 +1,149 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aimllmgemma4vllm
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: aimllmgemma4vllm
+    io.kompose.service: aimllmgemma4vllm
+  annotations:
+    applications.app.bytetrade.io/entrances: '[{"name":"aimllmgemma4vllm","host":"aimllmgemma4vllm","port":8000,"icon":"https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png","title":"Gemma 4 26B A4B vLLM","authLevel":"internal","openMethod":"window"}]'
+    applications.app.bytetrade.io/gpu-inject: "true"
+    applications.app.bytetrade.io/icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
+    applications.app.bytetrade.io/required_gpu: 1Gi
+    applications.app.bytetrade.io/title: Gemma 4 26B A4B vLLM
+    applications.app.bytetrade.io/version: "2.0.0"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      io.kompose.service: aimllmgemma4vllm
+  template:
+    metadata:
+      labels:
+        app: aimllmgemma4vllm
+        io.kompose.network/chrome-default: "true"
+        io.kompose.service: aimllmgemma4vllm
+        applications.app.bytetrade.io/name: aimllmgemma4vllm
+        applications.app.bytetrade.io/owner: {{ .Release.Namespace | trimSuffix "-aimighty" }}
+        applications.app.bytetrade.io/raw-app-name: aimllmgemma4vllm
+        io.bytetrade.app: "true"
+    spec:
+      runtimeClassName: {{ .Values.runtimeClassName }}
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: aimllmgemma4vllm
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - vllm
+        - serve
+        args:
+        - $(MODEL_NAME)
+        - --served-model-name
+        - $(MODEL_ALIAS)
+        - --host
+        - 0.0.0.0
+        - --port
+        - "8000"
+        - --max-model-len
+        - $(MAX_MODEL_LEN)
+        - --gpu-memory-utilization
+        - $(GPU_MEMORY_UTILIZATION)
+        - --max-num-seqs
+        - {{ .Values.env.MAX_NUM_SEQS | quote }}
+        - --max-num-batched-tokens
+        - {{ .Values.env.MAX_NUM_BATCHED_TOKENS | quote }}
+        - --attention-backend
+        - triton_attn
+        - --kv-cache-dtype
+        - fp8
+        - --dtype
+        - auto
+        - --trust-remote-code
+        - --download-dir
+        - /models/huggingface
+        - --enable-prefix-caching
+        - --limit-mm-per-prompt
+        - '{"image":1}'
+        - --enable-auto-tool-choice
+        - --tool-call-parser
+        - gemma4
+        - --speculative-config
+        - '{"model":"$(DRAFTER_NAME)","method":"mtp","num_speculative_tokens":$(NUM_SPEC_TOKENS)}'
+        - --reasoning-parser
+        - gemma4
+        - --default-chat-template-kwargs
+        - '{"enable_thinking": true}'
+        - --generation-config
+        - vllm
+        env:
+        - name: MODEL_NAME
+          value: {{ .Values.env.MODEL_NAME | quote }}
+        - name: MODEL_ALIAS
+          value: {{ .Values.env.MODEL_ALIAS | quote }}
+        - name: MAX_MODEL_LEN
+          value: {{ .Values.env.MAX_MODEL_LEN | quote }}
+        - name: GPU_MEMORY_UTILIZATION
+          value: {{ .Values.env.GPU_MEMORY_UTILIZATION | quote }}
+        - name: DRAFTER_NAME
+          value: {{ .Values.env.DRAFTER_NAME | quote }}
+        - name: NUM_SPEC_TOKENS
+          value: {{ .Values.env.NUM_SPEC_TOKENS | quote }}
+        - name: HF_HOME
+          value: /models/huggingface
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: aimllmgemma4vllm-env
+              key: OLARES_USER_HUGGINGFACE_TOKEN
+              optional: true
+        - name: MODELS_DIR
+          value: /models
+        - name: CUDA_DEVICE_MEMORY_LIMIT_0
+          value: "24400m"
+        - name: GPU_TYPE
+          value: nvidia
+        - name: VLLM_USE_FLASHINFER_SAMPLER
+          value: "0"
+        ports:
+        - containerPort: {{ .Values.service.port }}
+          protocol: TCP
+        resources:
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+            nvidia.com/gpu: {{ index .Values.resources.limits "nvidia.com/gpu" }}
+            nvidia.com/gpumem: {{ index .Values.resources.limits "nvidia.com/gpumem" }}
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+            nvidia.com/gpu: {{ index .Values.resources.requests "nvidia.com/gpu" }}
+        volumeMounts:
+        - name: models
+          mountPath: /models
+        startupProbe:
+          httpGet:
+            path: {{ .Values.probes.startup.path }}
+            port: {{ .Values.probes.startup.port }}
+          failureThreshold: {{ .Values.probes.startup.failureThreshold }}
+          periodSeconds: {{ .Values.probes.startup.periodSeconds }}
+          initialDelaySeconds: {{ .Values.probes.startup.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.probes.startup.timeoutSeconds }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.probes.liveness.path }}
+            port: {{ .Values.probes.liveness.port }}
+          failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+          periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+          initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+      volumes:
+      - name: models
+        hostPath:
+          path: {{ .Values.userspace.appData }}/Data/aimllmgemma4vllm/models
+          type: DirectoryOrCreate
