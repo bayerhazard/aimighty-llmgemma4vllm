@@ -8,7 +8,7 @@ metadata:
   description: Gemma 4 26B A4B QAT-AWQ-INT4 + MTP Speculative Decoding via vLLM — optimized for coding & agentic workflows
   appid: aimllmgemma4vllm
   title: Gemma 4 26B A4B vLLM
-  version: '2.0.0'
+  version: '2.0.1'
   categories:
     - AI
     - Developer Tools
@@ -21,7 +21,7 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '2.0.0'
+  versionName: '2.0.1'
   upgradeDescription: |
     v2.0.0: Complete restructure. Renamed to aimllmgemma4vllm. Switched from bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 to cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 with MTP speculative decoding. New image vllm/vllm-openai:v0.23.0. Added triton_attn backend, fp8 KV cache, gemma4 tool calling. Removed NVFP4 patches (gemma4.py, fused_moe_layer.py). Follows vLLM Qwen36 chart conventions.
   fullDescription: |
