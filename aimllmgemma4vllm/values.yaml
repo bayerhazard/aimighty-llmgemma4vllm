@@ -26,7 +26,7 @@ resources:
 env:
   MODEL_NAME: cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4
   MODEL_ALIAS: gemma-4-26b-mtp-vllm
-  MAX_MODEL_LEN: "200000"
+  MAX_MODEL_LEN: "147500"
   GPU_MEMORY_UTILIZATION: "0.985"
   MAX_NUM_SEQS: "2"
   MAX_NUM_BATCHED_TOKENS: "8192"
