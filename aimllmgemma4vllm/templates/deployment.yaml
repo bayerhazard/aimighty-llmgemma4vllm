@@ -12,7 +12,7 @@ metadata:
     applications.app.bytetrade.io/icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
     applications.app.bytetrade.io/required_gpu: 1Gi
     applications.app.bytetrade.io/title: AIM Gemma4 26B-A4B vLLM
-    applications.app.bytetrade.io/version: "2.0.5"
+    applications.app.bytetrade.io/version: "2.0.6"
 spec:
   replicas: 1
   strategy:
@@ -62,9 +62,6 @@ spec:
         - triton_attn
         - --kv-cache-dtype
         - fp8
-        - --kv-cache-dtype-skip-layers
-        - sliding_window
-        - --calculate-kv-scales
         - --kv-offloading-size
         - "24"
         - --quantization

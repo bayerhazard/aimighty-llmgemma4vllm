@@ -2,8 +2,8 @@ apiVersion: v2
 name: aimllmgemma4vllm
 description: Gemma 4 26B A4B QAT-AWQ-INT4 + MTP Speculative Decoding via vLLM on RTX 5090 Blackwell
 type: application
-version: 2.0.5
-appVersion: "2.0.5"
+version: 2.0.6
+appVersion: "2.0.6"
 home: https://github.com/bayerhazard/aimighty-llmgemma4vllm
 sources:
   - https://github.com/bayerhazard/aimighty-llmgemma4vllm
