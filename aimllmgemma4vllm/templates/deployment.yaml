@@ -12,7 +12,7 @@ metadata:
     applications.app.bytetrade.io/icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
     applications.app.bytetrade.io/required_gpu: 1Gi
     applications.app.bytetrade.io/title: AIM Gemma4 26B-A4B vLLM
-    applications.app.bytetrade.io/version: "2.0.8"
+    applications.app.bytetrade.io/version: "2.0.9"
 spec:
   replicas: 1
   strategy:
@@ -83,19 +83,10 @@ spec:
         - '{"enable_thinking": true}'
         - --generation-config
         - vllm
+        envFrom:
+        - configMapRef:
+            name: aimllmgemma4vllm-env
         env:
-        - name: MODEL_NAME
-          value: {{ .Values.env.MODEL_NAME | quote }}
-        - name: MODEL_ALIAS
-          value: {{ .Values.env.MODEL_ALIAS | quote }}
-        - name: MAX_MODEL_LEN
-          value: {{ .Values.env.MAX_MODEL_LEN | quote }}
-        - name: GPU_MEMORY_UTILIZATION
-          value: {{ .Values.env.GPU_MEMORY_UTILIZATION | quote }}
-        - name: DRAFTER_NAME
-          value: {{ .Values.env.DRAFTER_NAME | quote }}
-        - name: NUM_SPEC_TOKENS
-          value: {{ .Values.env.NUM_SPEC_TOKENS | quote }}
         - name: HF_HOME
           value: /models/huggingface
         - name: HF_TOKEN

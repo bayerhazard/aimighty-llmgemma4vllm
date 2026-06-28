@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aimllmgemma4vllm-env
+  namespace: {{ .Release.Namespace }}
+data:
+  MODEL_NAME: {{ .Values.env.MODEL_NAME | quote }}
+  MODEL_ALIAS: {{ .Values.env.MODEL_ALIAS | quote }}
+  MAX_MODEL_LEN: {{ .Values.env.MAX_MODEL_LEN | quote }}
+  GPU_MEMORY_UTILIZATION: {{ .Values.env.GPU_MEMORY_UTILIZATION | quote }}
+  MAX_NUM_SEQS: {{ .Values.env.MAX_NUM_SEQS | quote }}
+  MAX_NUM_BATCHED_TOKENS: {{ .Values.env.MAX_NUM_BATCHED_TOKENS | quote }}
+  DRAFTER_NAME: {{ .Values.env.DRAFTER_NAME | quote }}
+  NUM_SPEC_TOKENS: {{ .Values.env.NUM_SPEC_TOKENS | quote }}
+  VLLM_EXTRA_ARGS: {{ .Values.env.VLLM_EXTRA_ARGS | quote }}
