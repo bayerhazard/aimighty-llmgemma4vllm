@@ -7,12 +7,12 @@ metadata:
     app: aimllmgemma4vllm
     io.kompose.service: aimllmgemma4vllm
   annotations:
-    applications.app.bytetrade.io/entrances: '[{"name":"aimllmgemma4vllm","host":"aimllmgemma4vllm","port":8000,"icon":"https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png","title":"Gemma 4 26B A4B vLLM","authLevel":"internal","openMethod":"window"}]'
+    applications.app.bytetrade.io/entrances: '[{"name":"aimllmgemma4vllm","host":"aimllmgemma4vllm","port":8000,"icon":"https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png","title":"AIM Gemma4 26B-A4B vLLM","authLevel":"internal","openMethod":"window"}]'
     applications.app.bytetrade.io/gpu-inject: "true"
     applications.app.bytetrade.io/icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
     applications.app.bytetrade.io/required_gpu: 1Gi
-    applications.app.bytetrade.io/title: Gemma 4 26B A4B vLLM
-    applications.app.bytetrade.io/version: "2.0.1"
+    applications.app.bytetrade.io/title: AIM Gemma4 26B-A4B vLLM
+    applications.app.bytetrade.io/version: "2.0.2"
 spec:
   replicas: 1
   strategy:
@@ -62,6 +62,13 @@ spec:
         - triton_attn
         - --kv-cache-dtype
         - fp8
+        - --kv-cache-dtype-skip-layers
+        - sliding_window
+        - --calculate-kv-scales
+        - --kv-offloading-size
+        - "24"
+        - --quantization
+        - compressed-tensors
         - --dtype
         - auto
         - --trust-remote-code
