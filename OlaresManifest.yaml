@@ -8,7 +8,7 @@ metadata:
   description: Gemma 4 26B A4B QAT-AWQ-INT4 + MTP Speculative Decoding via vLLM — optimized for coding & agentic workflows
   appid: aimllmgemma4vllm
   title: AIM Gemma4 26B-A4B vLLM
-  version: '2.0.9'
+  version: '2.1.0'
   categories:
     - AI
     - Developer Tools
@@ -21,8 +21,9 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '2.0.9'
+  versionName: '2.1.0'
   upgradeDescription: |
+    v2.1.0: Fix Helm ownership metadata on ConfigMap — re-enables clean upgrades.
     v2.0.9: Added ConfigMap for env vars. Env vars now hot-reloadable via kubectl edit configmap.
     v2.0.8: Pinned to olares-worker (RTX 5090). Removed --kv-offloading-size + --quantization. FP8-only AWQ at 200k.
     v2.0.5: Reduce MAX_MODEL_LEN 200000→147500.
