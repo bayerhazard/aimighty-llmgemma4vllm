@@ -7,15 +7,15 @@ metadata:
   icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
   description: Gemma 4 26B A4B QAT-AWQ-INT4 + MTP Speculative Decoding via vLLM — optimized for coding & agentic workflows
   appid: aimllmgemma4vllm
-  title: AIM Gemma4 26B-A4B vLLM
-  version: '2.1.1'
+  title: Gemma4 26B-A4B
+  version: '2.1.2'
   categories:
     - LLM Chat
 entrances:
   - name: aimllmgemma4vllm
     port: 8000
     host: aimllmgemma4vllm
-    title: AIM Gemma4 26B-A4B vLLM
+    title: Gemma4 26B-A4B
     icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
     openMethod: window
     authLevel: internal
