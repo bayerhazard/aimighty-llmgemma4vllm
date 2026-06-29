@@ -8,10 +8,9 @@ metadata:
   description: Gemma 4 26B A4B QAT-AWQ-INT4 + MTP Speculative Decoding via vLLM — optimized for coding & agentic workflows
   appid: aimllmgemma4vllm
   title: AIM Gemma4 26B-A4B vLLM
-  version: '2.1.0'
+  version: '2.1.1'
   categories:
-    - AI
-    - Developer Tools
+    - LLM Chat
 entrances:
   - name: aimllmgemma4vllm
     port: 8000
