@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B QAT-AWQ-INT4 + MTP Speculative Decoding via vLLM — optimized for coding & agentic workflows
   appid: aimllmgemma4vllm
   title: AIM Gemma4 26B-A4B vLLM
-  version: '2.1.8'
+  version: '2.1.9'
   categories:
     - AI
     - Developer Tools
@@ -25,7 +25,7 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '2.1.8'
+  versionName: '2.1.9'
   upgradeDescription: |
     v2.1.8: accelerator: [{mode: nvidia}] im OlaresManifest ergänzt (app-service v3 AutoSelectMode: ohne accelerator-Deklaration → "No matching GPU type" 400). GPU-Apps müssen den Modus explizit deklarieren. Install benötigt freie GPU (RTX 5090, ~22.5 GB VRAM) — nicht parallel zu aimqwen36llama betreibbar.
     v2.1.7: HF_TOKEN auf .Values.olaresEnv.HF_TOKEN + envs-Sektion (v3: OLARES_USER_* in chart files verboten).
@@ -77,8 +77,6 @@ spec:
     - en-US
   supportArch:
     - amd64
-  accelerator:
-    - mode: nvidia
   requiredCpu: 4
   requiredMemory: 24Gi
   limitedCpu: 16
