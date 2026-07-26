@@ -4,6 +4,11 @@ workloads:
   aimllmgemma4vllm:
     replicaCount: 1
 
+# Olares-injected env (from OlaresManifest envs:). Default present so
+# standalone `helm template` renders without nil pointer; Olares overrides at install.
+olaresEnv:
+  HF_TOKEN: ""
+
 image:
   repository: vllm/vllm-openai
   tag: v0.23.0

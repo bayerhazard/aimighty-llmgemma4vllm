@@ -12,7 +12,7 @@ metadata:
     applications.app.bytetrade.io/icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
     applications.app.bytetrade.io/required_gpu: 1Gi
     applications.app.bytetrade.io/title: AIM Gemma4 26B-A4B vLLM
-    applications.app.bytetrade.io/version: "2.1.6"
+    applications.app.bytetrade.io/version: "2.1.7"
 spec:
   replicas: {{ .Values.workloads.aimllmgemma4vllm.replicaCount }}
   strategy:
@@ -87,11 +87,7 @@ spec:
         - name: HF_HOME
           value: /models/huggingface
         - name: HF_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: aimllmgemma4vllm-env
-              key: OLARES_USER_HUGGINGFACE_TOKEN
-              optional: true
+          value: {{ .Values.olaresEnv.HF_TOKEN | default "" | quote }}
         - name: MODELS_DIR
           value: /models
         - name: CUDA_DEVICE_MEMORY_LIMIT_0
