@@ -12,7 +12,7 @@ metadata:
     applications.app.bytetrade.io/icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
     applications.app.bytetrade.io/required_gpu: 1Gi
     applications.app.bytetrade.io/title: AIM Gemma4 26B-A4B vLLM
-    applications.app.bytetrade.io/version: "2.1.7"
+    applications.app.bytetrade.io/version: "2.1.8"
 spec:
   replicas: {{ .Values.workloads.aimllmgemma4vllm.replicaCount }}
   strategy:

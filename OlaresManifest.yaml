@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B QAT-AWQ-INT4 + MTP Speculative Decoding via vLLM — optimized for coding & agentic workflows
   appid: aimllmgemma4vllm
   title: AIM Gemma4 26B-A4B vLLM
-  version: '2.1.7'
+  version: '2.1.8'
   categories:
     - AI
     - Developer Tools
@@ -25,9 +25,10 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '2.1.7'
+  versionName: '2.1.8'
   upgradeDescription: |
-    v2.1.7: HF_TOKEN von secretKeyRef (OLARES_USER_HUGGINGFACE_TOKEN) auf .Values.olaresEnv.HF_TOKEN umgestellt + envs-Sektion im OlaresManifest (app-service v3-Validation: "apiVersion=v3 apps must not use OLARES_USER_* names in chart files — declare envs[].envName and reference .Values.olaresEnv.<envName>").
+    v2.1.8: accelerator: [{mode: nvidia}] im OlaresManifest ergänzt (app-service v3 AutoSelectMode: ohne accelerator-Deklaration → "No matching GPU type" 400). GPU-Apps müssen den Modus explizit deklarieren. Install benötigt freie GPU (RTX 5090, ~22.5 GB VRAM) — nicht parallel zu aimqwen36llama betreibbar.
+    v2.1.7: HF_TOKEN auf .Values.olaresEnv.HF_TOKEN + envs-Sektion (v3: OLARES_USER_* in chart files verboten).
     v2.1.6: deployment.replicas auf .Values.workloads.aimllmgemma4vllm.replicaCount umgestellt (app-service v3-Validation: replicas muss aus values.yaml workloads.<name>.replicaCount stammen).
     v2.1.5: Olares-Dependency auf >=1.12.6-0 gesetzt (apiVersion v3 erfordert Olares 1.12.6+).
     v2.1.4: Migrate OlaresManifest v2 → v3 (olaresManifest.version 0.10.0 → 0.12.0, apiVersion v2 → v3, workloadReplicas ergänzt). App-service auf Olares 1.12.6 lehnt apiVersion v2 ab ("app with apiVersion v2 is incompatible and cannot be install", HTTP 403).
@@ -76,6 +77,8 @@ spec:
     - en-US
   supportArch:
     - amd64
+  accelerator:
+    - mode: nvidia
   requiredCpu: 4
   requiredMemory: 24Gi
   limitedCpu: 16
