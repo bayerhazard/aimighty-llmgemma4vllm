@@ -1,5 +1,9 @@
 replicaCount: 1
 
+workloads:
+  aimllmgemma4vllm:
+    replicaCount: 1
+
 image:
   repository: vllm/vllm-openai
   tag: v0.23.0
