@@ -12,7 +12,7 @@ metadata:
     applications.app.bytetrade.io/icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
     applications.app.bytetrade.io/required_gpu: 1Gi
     applications.app.bytetrade.io/title: AIM Gemma4 26B-A4B vLLM
-    applications.app.bytetrade.io/version: "2.1.0"
+    applications.app.bytetrade.io/version: "2.1.3"
 spec:
   replicas: 1
   strategy:
@@ -31,12 +31,9 @@ spec:
         applications.app.bytetrade.io/raw-app-name: aimllmgemma4vllm
         io.bytetrade.app: "true"
     spec:
-      runtimeClassName: {{ .Values.runtimeClassName }}
       restartPolicy: Always
       dnsPolicy: ClusterFirst
       terminationGracePeriodSeconds: 30
-      nodeSelector:
-        kubernetes.io/hostname: olares-worker
       containers:
       - name: aimllmgemma4vllm
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

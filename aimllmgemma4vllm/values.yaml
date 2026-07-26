@@ -34,7 +34,7 @@ env:
   NUM_SPEC_TOKENS: "3"
   VLLM_EXTRA_ARGS: --generation-config vllm
 
-runtimeClassName: nvidia
+runtimeClassName: ""
 
 probes:
   startup:
