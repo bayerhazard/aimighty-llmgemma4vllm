@@ -36,9 +36,11 @@ resources:
 env:
   MODEL_NAME: cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4
   MODEL_ALIAS: gemma-4-26b-vllm
-  # 96000: KV-Cache braucht ~45 KB/Tok (hybride SWA+Global Attention, fp8).
-  # 200k = 5.13 GiB noetig > verfuegbar → Crash. 96k = 4.14 GiB → passt mit util 0.98.
-  MAX_MODEL_LEN: "96000"
+  # 200000: funktioniert dank hybrider SWA-Amortisation — nur die 5 Full-Attention-Layer
+  # zahlen Langkontext (~10 KB/Tok fp8), die 25 Sliding-Layer (window 1024) amortisieren sich.
+  # Pool bei 200k: 267k Tokens (4.77 GiB). VORAUSSETZUNG: video:0 + batch 8192 + util 0.98,
+  # sonst frisst der MM-Encoder-Cache 3.5 GiB und 200k crasht ("5.13 GiB needed > 2.52 GiB").
+  MAX_MODEL_LEN: "200000"
   GPU_MEMORY_UTILIZATION: "0.98"
   MAX_NUM_SEQS: "2"
   # 8192: Encoder-Cache-Budget = max_num_batched_tokens → halbiert MM-Profiling-Speicher.
