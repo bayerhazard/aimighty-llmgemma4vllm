@@ -11,7 +11,7 @@ metadata:
     applications.app.bytetrade.io/icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
     applications.app.bytetrade.io/required_gpu: "1"
     applications.app.bytetrade.io/title: AIM Gemma4 26B-A4B vLLM
-    applications.app.bytetrade.io/version: "2.3.0"
+    applications.app.bytetrade.io/version: "2.4.0"
 spec:
   replicas: {{ .Values.workloads.aimllmgemma4vllm.replicaCount }}
   strategy:
@@ -66,7 +66,6 @@ spec:
         - --download-dir
         - /models/huggingface
         - --enable-prefix-caching
-        - --enable-chunked-prefill
         - --limit-mm-per-prompt
         # video:0 explizit — nightly-Profiler ignoriert fehlende video-Key und allokiert
         # sonst 6 video items max feature size (~3 GiB VRAM) beim MM-Profiling.
@@ -74,13 +73,14 @@ spec:
         - --enable-auto-tool-choice
         - --tool-call-parser
         - gemma4
-        - --enforce-eager
         - --reasoning-parser
         - gemma4
         - --default-chat-template-kwargs
         - '{"enable_thinking": true}'
         - --generation-config
         - vllm
+        - --speculative-config
+        - '{"model":"google/gemma-4-26B-A4B-it-assistant","method":"mtp","num_speculative_tokens":3}'
         envFrom:
         - configMapRef:
             name: aimllmgemma4vllm-env
@@ -96,7 +96,7 @@ spec:
         - name: GPU_TYPE
           value: nvidia
         - name: VLLM_USE_FLASHINFER_SAMPLER
-          value: "1"
+          value: "0"
         ports:
         - containerPort: {{ .Values.service.port }}
           protocol: TCP

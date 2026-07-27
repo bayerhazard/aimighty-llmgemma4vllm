@@ -36,16 +36,15 @@ resources:
 env:
   MODEL_NAME: cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4
   MODEL_ALIAS: gemma-4-26b-vllm
-  # 200000: funktioniert dank hybrider SWA-Amortisation — nur die 5 Full-Attention-Layer
-  # zahlen Langkontext (~10 KB/Tok fp8), die 25 Sliding-Layer (window 1024) amortisieren sich.
-  # Pool bei 200k: 267k Tokens (4.77 GiB). VORAUSSETZUNG: video:0 + batch 8192 + util 0.98,
-  # sonst frisst der MM-Encoder-Cache 3.5 GiB und 200k crasht ("5.13 GiB needed > 2.52 GiB").
-  MAX_MODEL_LEN: "200000"
+  # 96000: MTP + CUDAGraphs + fp8 KV + Blackwell 24 GB = 102k token pool bei 2.74 GiB.
+  # 200k crasht mit MTP (V1 Engine braucht 28 KiB/Tok vs V0 14 KiB, kein V0-Fallback).
+  MAX_MODEL_LEN: "96000"
   GPU_MEMORY_UTILIZATION: "0.98"
   MAX_NUM_SEQS: "2"
   # 8192: Encoder-Cache-Budget = max_num_batched_tokens → halbiert MM-Profiling-Speicher.
   MAX_NUM_BATCHED_TOKENS: "8192"
-  # DRAFTER_NAME and NUM_SPEC_TOKENS removed — gemma4 tag's transformers is too old for assistant model
+  NUM_SPEC_TOKENS: "3"
+  DRAFTER_NAME: google/gemma-4-26B-A4B-it-assistant
   VLLM_EXTRA_ARGS: --generation-config vllm
 
 runtimeClassName: ""

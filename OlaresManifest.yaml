@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B QAT-AWQ-INT4 via vLLM — optimized for coding & agentic workflows
   appid: aimllmgemma4vllm
   title: AIM Gemma4 26B-A4B vLLM
-  version: '2.3.0'
+  version: '2.4.0'
   categories:
     - AI
     - Developer Tools
