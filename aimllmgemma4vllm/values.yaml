@@ -11,7 +11,9 @@ olaresEnv:
 
 image:
   repository: vllm/vllm-openai
-  tag: v0.23.0
+  # SHA-pinned nightly = exakt der verifizierte Build (v0.23.1rc1.dev1403+g4080263bb).
+  # Enthaelt PR #40708 (weight_packed KeyError Fix). gemma4/gemma4-0505-cu130 crashen.
+  tag: cu129-nightly-4080263bb2c5d10deac17aaeb88e0823bc35bca9
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -26,7 +28,6 @@ resources:
     cpu: 16
     memory: 40Gi
     nvidia.com/gpu: 1
-    nvidia.com/gpumem: 1024
   requests:
     cpu: 4
     memory: 24Gi
@@ -34,13 +35,15 @@ resources:
 
 env:
   MODEL_NAME: cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4
-  MODEL_ALIAS: gemma-4-26b-mtp-vllm
-  MAX_MODEL_LEN: "200000"
-  GPU_MEMORY_UTILIZATION: "0.975"
+  MODEL_ALIAS: gemma-4-26b-vllm
+  # 96000: KV-Cache braucht ~45 KB/Tok (hybride SWA+Global Attention, fp8).
+  # 200k = 5.13 GiB noetig > verfuegbar → Crash. 96k = 4.14 GiB → passt mit util 0.98.
+  MAX_MODEL_LEN: "96000"
+  GPU_MEMORY_UTILIZATION: "0.98"
   MAX_NUM_SEQS: "2"
+  # 8192: Encoder-Cache-Budget = max_num_batched_tokens → halbiert MM-Profiling-Speicher.
   MAX_NUM_BATCHED_TOKENS: "8192"
-  DRAFTER_NAME: google/gemma-4-26B-A4B-it-assistant
-  NUM_SPEC_TOKENS: "3"
+  # DRAFTER_NAME and NUM_SPEC_TOKENS removed — gemma4 tag's transformers is too old for assistant model
   VLLM_EXTRA_ARGS: --generation-config vllm
 
 runtimeClassName: ""

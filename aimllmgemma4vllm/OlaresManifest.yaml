@@ -9,10 +9,10 @@ workloadReplicas:
 metadata:
   name: aimllmgemma4vllm
   icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
-  description: Gemma 4 26B A4B QAT-AWQ-INT4 + MTP Speculative Decoding via vLLM — optimized for coding & agentic workflows
+  description: Gemma 4 26B A4B QAT-AWQ-INT4 via vLLM — optimized for coding & agentic workflows
   appid: aimllmgemma4vllm
   title: AIM Gemma4 26B-A4B vLLM
-  version: '2.1.9'
+  version: '2.2.2'
   categories:
     - AI
     - Developer Tools
@@ -25,8 +25,11 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '2.1.9'
+  versionName: '2.2.2'
   upgradeDescription: |
+    v2.2.2: Olares 1.12.6 Reparatur. Image→SHA-gepinnter cu129-nightly (g4080263bb, enthält PR #40708 weight_packed-Fix — gemma4-0505-cu130 war 4 Tage zu alt und crashte). KV-Cache-Fix: video:0 im --limit-mm-per-prompt (Nightly-Profiler allokierte sonst ~3 GiB für 6 Video-Items), MAX_NUM_BATCHED_TOKENS 16384→8192 (halbiert MM-Encoder-Cache), GPU_MEMORY_UTILIZATION 0.95→0.98, MAX_MODEL_LEN 200000→96000 (KV-Bedarf 4.14 GiB < verfügbar — bei 200k Crash "5.13 GiB needed > 2.52 GiB available"). Verifiziert: Pod 2/2, /health 200, Inference OK.
+    v2.2.1: gemma4 tag→gemma4-0505-cu130 (Blackwell CUDA 13.0, Mai 2026). Fixes KeyError: weight_packed (MoE AWQ INT4 Expert-Loading in altem gemma4 Tag).
+    v2.2.0: vLLM gemma4 tag (CUDA 12.9, transformers mit Gemma4-Support). ohne Draft-MTP (transformers zu alt für assistant model). enforce-eager (torch.compile inkompatibel mit Gemma4 26B MoE). owner: aimighty fix (GPUBinding).
     v2.1.8: accelerator: [{mode: nvidia}] im OlaresManifest ergänzt (app-service v3 AutoSelectMode: ohne accelerator-Deklaration → "No matching GPU type" 400). GPU-Apps müssen den Modus explizit deklarieren. Install benötigt freie GPU (RTX 5090, ~22.5 GB VRAM) — nicht parallel zu aimqwen36llama betreibbar.
     v2.1.7: HF_TOKEN auf .Values.olaresEnv.HF_TOKEN + envs-Sektion (v3: OLARES_USER_* in chart files verboten).
     v2.1.6: deployment.replicas auf .Values.workloads.aimllmgemma4vllm.replicaCount umgestellt (app-service v3-Validation: replicas muss aus values.yaml workloads.<name>.replicaCount stammen).
@@ -42,15 +45,14 @@ spec:
     v2.0.2: Added --kv-cache-dtype-skip-layers sliding_window (FP16 for sliding-window layers) + --calculate-kv-scales (dynamic FP8 KV scale calibration) + --kv-offloading-size 24GiB (CPU swap for long-context preemption) + --quantization compressed-tensors (explicit). Renamed to "AIM Gemma4 26B-A4B vLLM".
     v2.0.0: Complete restructure. Renamed to aimllmgemma4vllm. Switched from bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 to cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 with MTP speculative decoding. New image vllm/vllm-openai:v0.23.0. Added triton_attn backend, fp8 KV cache, gemma4 tool calling. Removed NVFP4 patches (gemma4.py, fused_moe_layer.py). Follows vLLM Qwen36 chart conventions.
   fullDescription: |
-    Gemma 4 26B A4B – Multimodales LLM (Text + Image) mit QAT-AWQ-INT4 Quantisierung und MTP Speculative Decoding auf vLLM.
+    Gemma 4 26B A4B – Multimodales LLM (Text + Image) mit QAT-AWQ-INT4 Quantisierung auf vLLM.
 
     **Modell**
     cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 (QAT + AWQ INT4, ~15 GB).
-    MTP Speculative Decoding mit google/gemma-4-26B-A4B-it-assistant (3 spekulative Tokens).
-    200K Token Kontext. Multimodal (Text + Image).
+    96K Token Kontext. Multimodal (Text + Image, kein Video).
 
     **Inference Engine**
-    vLLM v0.23.0 mit triton_attn Backend. CUDA 13.1 (RTX 5090 Blackwell SM12.0).
+    vLLM v0.23.1rc (cu129, SHA-gepinnt) mit triton_attn Backend. CUDA 12.9 (RTX 5090 Blackwell).
     fp8 KV-Cache. GPU VRAM: ~22.5 GB belegt.
 
     **Performance (RTX 5090 Blackwell)**
