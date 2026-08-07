@@ -9,24 +9,26 @@ workloadReplicas:
 metadata:
   name: aimllmgemma4vllm
   icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
-  description: Gemma 4 26B A4B QAT-AWQ-INT4 via vLLM — optimized for coding & agentic workflows
+  description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 96K context, MTP, vision
   appid: aimllmgemma4vllm
-  title: AIM Gemma4 26B-A4B vLLM
-  version: '2.4.0'
+  title: AIM Gemma 4 26B A4B
+  version: '26.08.1'
   categories:
     - AI
-    - Developer Tools
+    - Vision
 entrances:
   - name: aimllmgemma4vllm
     port: 8000
     host: aimllmgemma4vllm
-    title: AIM Gemma4 26B-A4B vLLM
+    title: AIM Gemma 4 26B A4B
     icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '2.4.0'
+  versionName: '26.08.1'
   upgradeDescription: |
+    v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
+    categories AI + Vision, English descriptions. Built for Olares 1.12.6.
     v2.4.0: MTP Speculative Decoding reaktiviert. CUDAGraphs + torch.compile (enforce-eager entfernt) — 419 tok/s Coding, 280 tok/s Poetry (3.5× schneller). MAX_MODEL_LEN 200000→96000 (MTP + CUDAGraphs passen nicht in 24 GB auf V1 Engine). VLLM_USE_FLASHINFER_SAMPLER=0 (Blackwell SM120 Fix). Remove enable-chunked-prefill (overhead). Needle Haystack 100% (25/25), Agentic 100% (8/8).
     v2.2.2: Olares 1.12.6 Reparatur. Image→SHA-gepinnter cu129-nightly (g4080263bb, enthält PR #40708 weight_packed-Fix — gemma4-0505-cu130 war 4 Tage zu alt und crashte). KV-Cache-Fix: video:0 im --limit-mm-per-prompt (Nightly-Profiler allokierte sonst ~3 GiB für 6 Video-Items), MAX_NUM_BATCHED_TOKENS 16384→8192 (halbiert MM-Encoder-Cache), GPU_MEMORY_UTILIZATION 0.95→0.98, MAX_MODEL_LEN 200000→96000 (interim). Verifiziert: Pod 2/2, /health 200, Inference OK.
     v2.2.1: gemma4 tag→gemma4-0505-cu130 (Blackwell CUDA 13.0, Mai 2026). Fixes KeyError: weight_packed (MoE AWQ INT4 Expert-Loading in altem gemma4 Tag).
@@ -46,15 +48,17 @@ spec:
     v2.0.2: Added --kv-cache-dtype-skip-layers sliding_window (FP16 for sliding-window layers) + --calculate-kv-scales (dynamic FP8 KV scale calibration) + --kv-offloading-size 24GiB (CPU swap for long-context preemption) + --quantization compressed-tensors (explicit). Renamed to "AIM Gemma4 26B-A4B vLLM".
     v2.0.0: Complete restructure. Renamed to aimllmgemma4vllm. Switched from bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 to cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 with MTP speculative decoding. New image vllm/vllm-openai:v0.23.0. Added triton_attn backend, fp8 KV cache, gemma4 tool calling. Removed NVFP4 patches (gemma4.py, fused_moe_layer.py). Follows vLLM Qwen36 chart conventions.
   fullDescription: |
-    Gemma 4 26B A4B – Multimodales LLM (Text + Image) mit QAT-AWQ-INT4 Quantisierung auf vLLM.
+    Gemma 4 26B A4B — multimodal LLM (text + image) with QAT-AWQ-INT4 quantization on vLLM.
 
-    **Modell**
+    **Model**
     cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 (QAT + AWQ INT4, ~15 GB).
-    200K Token Kontext. Multimodal (Text + Image, kein Video).
+    96K token context. Multimodal (text + image, no video).
 
     **Inference Engine**
-    vLLM v0.23.1rc (cu129, SHA-gepinnt) mit triton_attn Backend. CUDA 12.9 (RTX 5090 Blackwell).
-    fp8 KV-Cache. GPU VRAM: ~22.5 GB belegt.
+    vLLM v0.23.1rc cu129, SHA-pinned (g4080263bb) with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
+    fp8 KV-Cache. CUDAGraphs + torch.compile.
+    MTP Speculative Decoding (3 tokens, google/gemma-4-26B-A4B-it-assistant).
+    GPU VRAM: ~22.5 GB.
 
     **Performance (RTX 5090 Blackwell, MTP Spec-Decoding)**
     - Coding (2000 tok): ~419 tok/s
@@ -63,15 +67,15 @@ spec:
     - Agentic Tool-Calling: 8/8 (100%)
 
     **API**
-    OpenAI-kompatibel: /v1/chat/completions, /v1/models, /health.
+    OpenAI-compatible: /v1/chat/completions, /v1/models, /health.
     Tool Calling via --enable-auto-tool-choice + --tool-call-parser gemma4.
     Reasoning via --reasoning-parser gemma4 + --default-chat-template-kwargs enable_thinking.
 
     **Resource Usage**
-    GPU: ~22.5 GB VRAM belegt (RTX 5090, 24 GB total)
+    GPU: ~22.5 GB VRAM (RTX 5090, 24 GB)
     RAM: 24-40 GB
-    Disk: 50 GB (Model-Download ~15 GB + Cache)
-    CPU: 4-16 Kerne
+    Disk: 50 GB (model download ~15 GB + cache)
+    CPU: 4-16 cores
 
   developer: Aimighty
   website: https://github.com/bayerhazard/aimighty-llmgemma4vllm
