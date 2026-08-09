@@ -5,7 +5,7 @@ FROM vllm/vllm-openai:v0.23.0-cu129
 
 USER root
 
-COPY . /opt/KVarN
+COPY opt/KVarN /opt/KVarN
 
 # Alle 28 KVarN-Diff-Dateien ins installierte vLLM kopieren
 RUN python3 - <<'PY'
