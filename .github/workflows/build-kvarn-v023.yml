@@ -39,6 +39,8 @@ jobs:
           file: docker/Dockerfile
           build-args: |
             CUDA_VERSION=12.9.2
+            max_jobs=1
+            nvcc_threads=2
           push: true
           tags: ${{ env.IMAGE }}:${{ env.TAG }}
           cache-from: type=gha
