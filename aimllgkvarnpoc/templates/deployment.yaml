@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aimllgkvarnpoc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: aimllgkvarnpoc
+    io.kompose.service: aimllgkvarnpoc
+  annotations:
+    applications.app.bytetrade.io/entrances: '[{"name":"aimllgkvarnpoc","host":"aimllgkvarnpoc","port":8000,"icon":"https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png","title":"AIM Gemma4 26B-A4B vLLM","authLevel":"internal","openMethod":"window"}]'
+    applications.app.bytetrade.io/icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
+    applications.app.bytetrade.io/required_gpu: "1"
+    applications.app.bytetrade.io/title: AIM Gemma4 26B-A4B vLLM
+    applications.app.bytetrade.io/version: "2.4.0"
+spec:
+  replicas: {{ .Values.workloads.aimllgkvarnpoc.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      io.kompose.service: aimllgkvarnpoc
+  template:
+    metadata:
+      labels:
+        app: aimllgkvarnpoc
+        io.kompose.network/chrome-default: "true"
+        io.kompose.service: aimllgkvarnpoc
+        applications.app.bytetrade.io/name: aimllgkvarnpoc
+        applications.app.bytetrade.io/owner: aimighty
+        applications.app.bytetrade.io/raw-app-name: aimllgkvarnpoc
+        io.bytetrade.app: "true"
+    spec:
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: aimllgkvarnpoc
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - vllm
+        - serve
+        args:
+        - $(MODEL_NAME)
+        - --served-model-name
+        - $(MODEL_ALIAS)
+        - --host
+        - 0.0.0.0
+        - --port
+        - "8000"
+        - --max-model-len
+        - $(MAX_MODEL_LEN)
+        - --gpu-memory-utilization
+        - $(GPU_MEMORY_UTILIZATION)
+        - --max-num-seqs
+        - {{ .Values.env.MAX_NUM_SEQS | quote }}
+        - --max-num-batched-tokens
+        - {{ .Values.env.MAX_NUM_BATCHED_TOKENS | quote }}
+        - --attention-backend
+        - triton_attn
+        - --kv-cache-dtype
+        - kvarn_k4v2_g128
+        - --block-size
+        - "128"
+        - --dtype
+        - auto
+        - --trust-remote-code
+        - --download-dir
+        - /models/huggingface
+        - --enable-prefix-caching
+        - --limit-mm-per-prompt
+        # video:0 explizit — nightly-Profiler ignoriert fehlende video-Key und allokiert
+        # sonst 6 video items max feature size (~3 GiB VRAM) beim MM-Profiling.
+        - '{"image":1,"video":0}'
+        - --enable-auto-tool-choice
+        - --tool-call-parser
+        - gemma4
+        - --reasoning-parser
+        - gemma4
+        - --default-chat-template-kwargs
+        - '{"enable_thinking": true}'
+        - --generation-config
+        - vllm
+        envFrom:
+        - configMapRef:
+            name: aimllgkvarnpoc-env
+        env:
+        - name: HF_HOME
+          value: /models/huggingface
+        - name: HF_TOKEN
+          value: {{ .Values.olaresEnv.HF_TOKEN | default "" | quote }}
+        - name: MODELS_DIR
+          value: /models
+        - name: CUDA_DEVICE_MEMORY_LIMIT_0
+          value: "24400m"
+        - name: GPU_TYPE
+          value: nvidia
+        - name: VLLM_USE_FLASHINFER_SAMPLER
+          value: "0"
+        ports:
+        - containerPort: {{ .Values.service.port }}
+          protocol: TCP
+        resources:
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+            nvidia.com/gpu: {{ index .Values.resources.limits "nvidia.com/gpu" }}
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+            nvidia.com/gpu: {{ index .Values.resources.requests "nvidia.com/gpu" }}
+        volumeMounts:
+        - name: models
+          mountPath: /models
+        startupProbe:
+          httpGet:
+            path: {{ .Values.probes.startup.path }}
+            port: {{ .Values.probes.startup.port }}
+          failureThreshold: {{ .Values.probes.startup.failureThreshold }}
+          periodSeconds: {{ .Values.probes.startup.periodSeconds }}
+          initialDelaySeconds: {{ .Values.probes.startup.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.probes.startup.timeoutSeconds }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.probes.liveness.path }}
+            port: {{ .Values.probes.liveness.port }}
+          failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+          periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+          initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+      volumes:
+      - name: models
+        hostPath:
+          path: {{ .Values.userspace.appData }}/Data/aimllgkvarnpoc/models
+          type: DirectoryOrCreate

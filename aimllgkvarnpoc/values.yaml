@@ -1,0 +1,70 @@
+replicaCount: 1
+
+workloads:
+  aimllgkvarnpoc:
+    replicaCount: 1
+
+# Olares-injected env (from OlaresManifest envs:). Default present so
+# standalone `helm template` renders without nil pointer; Olares overrides at install.
+olaresEnv:
+  HF_TOKEN: ""
+
+image:
+  repository: ghcr.io/bayerhazard/aimighty-embedder
+  # KVarN-Fork (Huawei CSL) — PoC: 200K + MTP via kvarn_k4v2_g128. Basis v0.22.0
+  # (enthaelt Gemma4 PR#38826 + weight_packed-Fix PR#40708).
+  # Tag im PUBLICEN aimighty-embedder-Repo (private Repos -> 401 beim Olares-Pull).
+  tag: vllm-kvarn-0.22.0
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: aimllgkvarnpoc
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources:
+  limits:
+    cpu: 16
+    memory: 40Gi
+    nvidia.com/gpu: 1
+  requests:
+    cpu: 4
+    memory: 24Gi
+    nvidia.com/gpu: 1
+
+env:
+  MODEL_NAME: cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4
+  MODEL_ALIAS: gemma-4-26b-kvarn
+  # 200000: Ziel-Langkontext. Hybride SWA-Amortisation (5 Full-Attn-Layer zahlen
+  # Langkontext (~10 KB/Tok fp8, V1), 25 Sliding-Layer window 1024 amortisieren).
+  # Mit skip-sliding-window entfällt FP8-Quantisierung auf bounded Sliding-KV.
+  # V1-Bedarf ~28 KiB/Tok-Äquivalent (Full-Attn-Anteil) → Pool-Ziel ~267k Tokens.
+  MAX_MODEL_LEN: "200000"
+  GPU_MEMORY_UTILIZATION: "0.98"
+  MAX_NUM_SEQS: "2"
+  # 8192: Encoder-Cache-Budget = max_num_batched_tokens → halbiert MM-Profiling-Speicher.
+  MAX_NUM_BATCHED_TOKENS: "8192"
+  VLLM_EXTRA_ARGS: --generation-config vllm
+
+runtimeClassName: ""
+
+probes:
+  startup:
+    path: /health
+    port: 8000
+    failureThreshold: 120
+    periodSeconds: 30
+    initialDelaySeconds: 60
+    timeoutSeconds: 30
+  liveness:
+    path: /health
+    port: 8000
+    failureThreshold: 5
+    periodSeconds: 30
+    initialDelaySeconds: 600
+    timeoutSeconds: 10
+
+userspace:
+  appData: /olares/rootfs/userspace/pvc-userspace-aimighty-hh1h3chfhnoebc1y
