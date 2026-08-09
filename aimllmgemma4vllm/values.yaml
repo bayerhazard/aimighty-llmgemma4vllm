@@ -36,9 +36,11 @@ resources:
 env:
   MODEL_NAME: cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4
   MODEL_ALIAS: gemma-4-26b-vllm
-  # 96000: MTP + CUDAGraphs + fp8 KV + Blackwell 24 GB = 102k token pool bei 2.74 GiB.
-  # 200k crasht mit MTP (V1 Engine braucht 28 KiB/Tok vs V0 14 KiB, kein V0-Fallback).
-  MAX_MODEL_LEN: "96000"
+  # 200000: Ziel-Langkontext. Hybride SWA-Amortisation (5 Full-Attn-Layer zahlen
+  # Langkontext (~10 KB/Tok fp8, V1), 25 Sliding-Layer window 1024 amortisieren).
+  # Mit skip-sliding-window entfällt FP8-Quantisierung auf bounded Sliding-KV.
+  # V1-Bedarf ~28 KiB/Tok-Äquivalent (Full-Attn-Anteil) → Pool-Ziel ~267k Tokens.
+  MAX_MODEL_LEN: "200000"
   GPU_MEMORY_UTILIZATION: "0.98"
   MAX_NUM_SEQS: "2"
   # 8192: Encoder-Cache-Budget = max_num_batched_tokens → halbiert MM-Profiling-Speicher.

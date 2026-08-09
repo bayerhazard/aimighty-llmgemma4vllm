@@ -60,6 +60,8 @@ spec:
         - triton_attn
         - --kv-cache-dtype
         - fp8
+        - --kv-cache-dtype-skip-layers
+        - sliding_window
         - --dtype
         - auto
         - --trust-remote-code

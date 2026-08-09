@@ -9,10 +9,10 @@ workloadReplicas:
 metadata:
   name: aimllmgemma4vllm
   icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
-  description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 96K context, MTP, vision
+  description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.1'
+  version: '26.08.2'
   categories:
     - AI
     - Vision
@@ -25,8 +25,14 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.1'
+  versionName: '26.08.2'
   upgradeDescription: |
+    v26.08.2: Ziel 200K-Kontext wiederhergestellt via hybrider SWA-Amortisation —
+    nur die 5 Full-Attention-Layer zahlen Langkontext, 25 Sliding-Layer (window 1024)
+    amortisieren sich. KV-Cache: fp8 + --kv-cache-dtype-skip-layers sliding_window
+    (bounded Sliding-KV bleibt BF16 — keine FP8-Overheads, empfohlener Hybrid-Pfad).
+    MAX_MODEL_LEN 96000→200000, Pool-Ziel ~267k Tokens. MTP + CUDAGraphs bleiben.
+    Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
     v2.4.0: MTP Speculative Decoding reaktiviert. CUDAGraphs + torch.compile (enforce-eager entfernt) — 419 tok/s Coding, 280 tok/s Poetry (3.5× schneller). MAX_MODEL_LEN 200000→96000 (MTP + CUDAGraphs passen nicht in 24 GB auf V1 Engine). VLLM_USE_FLASHINFER_SAMPLER=0 (Blackwell SM120 Fix). Remove enable-chunked-prefill (overhead). Needle Haystack 100% (25/25), Agentic 100% (8/8).
@@ -52,7 +58,7 @@ spec:
 
     **Model**
     cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 (QAT + AWQ INT4, ~15 GB).
-    96K token context. Multimodal (text + image, no video).
+    200K token context. Multimodal (text + image, no video).
 
     **Inference Engine**
     vLLM v0.23.1rc cu129, SHA-pinned (g4080263bb) with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
