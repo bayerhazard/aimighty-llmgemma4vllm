@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.2'
+  version: '26.08.3'
   categories:
     - AI
     - Vision
@@ -25,13 +25,13 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.2'
+  versionName: '26.08.3'
   upgradeDescription: |
-    v26.08.2: Ziel 200K-Kontext wiederhergestellt via hybrider SWA-Amortisation —
-    nur die 5 Full-Attention-Layer zahlen Langkontext, 25 Sliding-Layer (window 1024)
-    amortisieren sich. KV-Cache: fp8 + --kv-cache-dtype-skip-layers sliding_window
-    (bounded Sliding-KV bleibt BF16 — keine FP8-Overheads, empfohlener Hybrid-Pfad).
-    MAX_MODEL_LEN 96000→200000, Pool-Ziel ~267k Tokens. MTP + CUDAGraphs bleiben.
+    v26.08.3: Ziel 200K-Kontext wiederhergestellt — reine native hybride SWA-Amortisation:
+    nur die 5 Full-Attention-Layer (globalKV 2x512) zahlen Langkontext, 25 Sliding-Layer
+    (localKV 8x256, window 1024) bleiben bounded. --kv-cache-dtype fp8 ohne skip-layers-Flag
+    (der Flag erzwang BF16 auf voller Laenge -> 8.55 GiB-Estimate; ohne ihn ~2 GiB bei 200K).
+    MAX_MODEL_LEN 96000->200000. MTP + CUDAGraphs bleiben.
     Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
