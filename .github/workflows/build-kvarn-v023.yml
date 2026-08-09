@@ -7,6 +7,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE: ghcr.io/bayerhazard/aimighty-embedder
   TAG: vllm-kvarn-0.23
+  TARGET: ghcr.io/bayerhazard/aimighty-llmgemma4vllm
 
 jobs:
   build:
@@ -51,7 +52,9 @@ jobs:
           context: build
           file: build/Dockerfile
           push: true
-          tags: ${{ env.IMAGE }}:${{ env.TAG }}
+          tags: |
+            ${{ env.IMAGE }}:${{ env.TAG }}
+            ${{ env.TARGET }}:${{ env.TAG }}
           cache-from: type=gha,scope=kvarn-overlay
           cache-to: type=gha,mode=max,scope=kvarn-overlay
           platforms: linux/amd64
