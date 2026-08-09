@@ -11,17 +11,29 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 120
     permissions:
       contents: read
       packages: write
     steps:
-      - name: Checkout KVarN fork
+      - name: Checkout this repo (chart + Dockerfile.kvarn)
+        uses: actions/checkout@v4
+
+      - name: Checkout KVarN fork (context)
         uses: actions/checkout@v4
         with:
           repository: huawei-csl/KVarN
           ref: main
           fetch-depth: 1
+          path: kvarn
+
+      - name: Move Dockerfile + fork into build context
+        run: |
+          mkdir -p build/opt/KVarN
+          cp Dockerfile.kvarn build/Dockerfile
+          cp -r kvarn/. build/opt/KVarN/
+          rm -rf build/opt/KVarN/.git
+          ls build/opt/KVarN | head -5
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -34,27 +46,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        id: build
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: docker/Dockerfile
-          build-args: |
-            CUDA_VERSION=12.9.2
-            max_jobs=2
-            nvcc_threads=4
+          context: build
+          file: build/Dockerfile
           push: true
           tags: ${{ env.IMAGE }}:${{ env.TAG }}
-          cache-from: type=gha,scope=kvarn
-          cache-to: type=gha,mode=max,scope=kvarn
+          cache-from: type=gha,scope=kvarn-overlay
+          cache-to: type=gha,mode=max,scope=kvarn-overlay
           platforms: linux/amd64
           progress: plain
-        continue-on-error: true
-
-      - name: Upload build log on failure
-        if: steps.build.outcome == 'failure'
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: /tmp
-          retention-days: 7

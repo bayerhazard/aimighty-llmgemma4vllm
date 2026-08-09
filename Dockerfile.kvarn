@@ -1,0 +1,73 @@
+# KVarN v0.23 Overlay-Build: offizielles vLLM v0.23.0-Image + komplette KVarN-Diff.
+# KEIN CUDA-Compile — KVarN ist pure Python + Triton (JIT zur Laufzeit).
+# Fork = huawei-csl/KVarN main (7586257), diff exakt gegen vllm v0.23.0 (28 Dateien).
+FROM vllm/vllm-openai:v0.23.0-cu129
+
+USER root
+
+COPY . /opt/KVarN
+
+# Alle 28 KVarN-Diff-Dateien ins installierte vLLM kopieren
+RUN python3 - <<'PY'
+import shutil, pathlib, subprocess
+src = pathlib.Path('/opt/KVarN')
+site = pathlib.Path('/usr/local/lib/python3.12/dist-packages/vllm')
+assert site.exists(), f'vllm site-packages nicht gefunden: {site}'
+
+# Liste der geaenderten Dateien (exakt die Fork-Diff gegen v0.23.0)
+files = [
+ "vllm/config/cache.py",
+ "vllm/model_executor/layers/attention/attention.py",
+ "vllm/model_executor/layers/attention/mla_attention.py",
+ "vllm/model_executor/layers/quantization/kvarn/__init__.py",
+ "vllm/model_executor/layers/quantization/kvarn/config.py",
+ "vllm/model_executor/layers/quantization/kvarn/mla_probe.py",
+ "vllm/model_executor/layers/quantization/kvarn/mla_quant.py",
+ "vllm/model_executor/layers/quantization/kvarn/sinkhorn.py",
+ "vllm/model_executor/layers/rotary_embedding/deepseek_scaling_rope.py",
+ "vllm/model_executor/models/config.py",
+ "vllm/platforms/cuda.py",
+ "vllm/platforms/interface.py",
+ "vllm/utils/torch_utils.py",
+ "vllm/v1/attention/backends/kvarn_attn.py",
+ "vllm/v1/attention/backends/mla/flashmla_sparse.py",
+ "vllm/v1/attention/backends/mla/flashmla_sparse_kvarn.py",
+ "vllm/v1/attention/backends/mla/triton_mla.py",
+ "vllm/v1/attention/backends/registry.py",
+ "vllm/v1/attention/ops/kvarn_decode.py",
+ "vllm/v1/attention/ops/kvarn_mla_attn_proto.py",
+ "vllm/v1/attention/ops/kvarn_mla_paged_proto.py",
+ "vllm/v1/attention/ops/kvarn_store.py",
+ "vllm/v1/attention/ops/triton_kvarn_decode.py",
+ "vllm/v1/attention/ops/triton_kvarn_sinkhorn.py",
+ "vllm/v1/core/kv_cache_utils.py",
+ "vllm/v1/core/single_type_kv_cache_manager.py",
+ "vllm/v1/kv_cache_interface.py",
+ "vllm/v1/worker/gpu_worker.py",
+]
+ok = 0
+for rel in files:
+    f = src / rel
+    t = site / rel.replace('vllm/', '')
+    if not f.exists():
+        print('FEHLT im Fork:', rel)
+        continue
+    t.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(f, t)
+    ok += 1
+print(f'{ok}/{len(files)} Dateien kopiert')
+
+# kvarn-attn braucht evtl. '..' imports — Syntax-Check aller kopierten Dateien
+import py_compile
+errors = 0
+for rel in files:
+    t = site / rel.replace('vllm/', '')
+    try:
+        py_compile.compile(str(t), doraise=True)
+    except Exception as e:
+        print('SYNTAX-ERR:', rel, e)
+        errors += 1
+print('syntax errors:', errors)
+PY
+
+USER vllm
