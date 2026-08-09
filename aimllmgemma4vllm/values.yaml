@@ -45,8 +45,6 @@ env:
   MAX_NUM_SEQS: "2"
   # 8192: Encoder-Cache-Budget = max_num_batched_tokens → halbiert MM-Profiling-Speicher.
   MAX_NUM_BATCHED_TOKENS: "8192"
-  NUM_SPEC_TOKENS: "3"
-  DRAFTER_NAME: google/gemma-4-26B-A4B-it-assistant
   VLLM_EXTRA_ARGS: --generation-config vllm
 
 runtimeClassName: ""

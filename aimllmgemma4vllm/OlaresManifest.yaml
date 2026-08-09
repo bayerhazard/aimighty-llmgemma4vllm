@@ -9,10 +9,10 @@ workloadReplicas:
 metadata:
   name: aimllmgemma4vllm
   icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
-  description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
+  description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.3'
+  version: '26.08.4'
   categories:
     - AI
     - Vision
@@ -25,13 +25,12 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.3'
+  versionName: '26.08.4'
   upgradeDescription: |
-    v26.08.3: Ziel 200K-Kontext wiederhergestellt — reine native hybride SWA-Amortisation:
-    nur die 5 Full-Attention-Layer (globalKV 2x512) zahlen Langkontext, 25 Sliding-Layer
-    (localKV 8x256, window 1024) bleiben bounded. --kv-cache-dtype fp8 ohne skip-layers-Flag
-    (der Flag erzwang BF16 auf voller Laenge -> 8.55 GiB-Estimate; ohne ihn ~2 GiB bei 200K).
-    MAX_MODEL_LEN 96000->200000. MTP + CUDAGraphs bleiben.
+    v26.08.4: 200K-Kontext aktiv — MTP/Draft-Modell entfernt (assistant-Modell frisst
+    ~2 GiB VRAM; ohne es steht genug KV-Budget fuer 200K zur Verfuegung). Native hybride
+    SWA-Amortisation: 5 Full-Attn-Layer (globalKV 2x512) zahlen Langkontext, 25 Sliding
+    (localKV 8x256, w1024) bounded. fp8, kein skip-layers-Flag. CUDAGraphs bleiben.
     Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
@@ -63,12 +62,11 @@ spec:
     **Inference Engine**
     vLLM v0.23.1rc cu129, SHA-pinned (g4080263bb) with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
     fp8 KV-Cache. CUDAGraphs + torch.compile.
-    MTP Speculative Decoding (3 tokens, google/gemma-4-26B-A4B-it-assistant).
+    Native hybrid SWA: 5 full-attention layers for long context, 25 sliding-window layers bounded.
     GPU VRAM: ~22.5 GB.
 
-    **Performance (RTX 5090 Blackwell, MTP Spec-Decoding)**
-    - Coding (2000 tok): ~419 tok/s
-    - Creative (2000 tok): ~280 tok/s
+    **Performance (RTX 5090 Blackwell)**
+    - 200K token context
     - Needle Haystack: 25/25 (100%)
     - Agentic Tool-Calling: 8/8 (100%)
 
