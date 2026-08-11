@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.11'
+  version: '26.08.12'
   categories:
     - AI
     - Vision
@@ -25,12 +25,12 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.11'
+  versionName: '26.08.12'
   upgradeDescription: |
-    v26.08.11: vLLM v0.26.0-cu129, CUDAGraphs AKTIV, torch.compile AUS
-    (--compilation-config mode=none): Inductor-Arbeitspuffer frisst zuviel VRAM
-    (23.34/23.42 GiB -> OOM beim Capture). CUDAGraphs captured eager-Kernel
-    direkt — Speed bleibt, RAM-Overhead weg. expandable_segments + max-num-seqs 1.
+    v26.08.12: vLLM v0.26.0-cu129, CUDAGraphs AKTIV, torch.compile AUS
+    (--compilation-config '{"mode":0}' — JSON-Format, mode=none-String war invalide):
+    Inductor-Arbeitspuffer frisst zuviel VRAM (OOM beim Capture). CUDAGraphs
+    captured eager-Kernel direkt. expandable_segments + max-num-seqs 1.
     Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.

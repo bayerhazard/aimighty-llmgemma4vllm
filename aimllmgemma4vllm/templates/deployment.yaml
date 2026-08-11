@@ -80,7 +80,7 @@ spec:
         - --generation-config
         - vllm
         - --compilation-config
-        - mode=none
+        - '{"mode":0}'
         # v0.26.0: torch.compile (Inductor) frisst zuviel VRAM (Modell 16G + 200k-KV +
         # Compile-Arbeitspuffer + CUDAGraph = 23.34/23.42 GiB -> OOM beim Capture).
         # mode=none: CUDAGraphs bleiben aktiv (capturen eager-Kernel), Inductor aus.
