@@ -9,10 +9,10 @@ workloadReplicas:
 metadata:
   name: aimllmgemma4vllm
   icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
-  description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
+  description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.12'
+  version: '26.08.13'
   categories:
     - AI
     - Vision
@@ -25,13 +25,12 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.12'
+  versionName: '26.08.13'
   upgradeDescription: |
-    v26.08.12: vLLM v0.26.0-cu129, CUDAGraphs AKTIV, torch.compile AUS
-    (--compilation-config '{"mode":0}' — JSON-Format, mode=none-String war invalide):
-    Inductor-Arbeitspuffer frisst zuviel VRAM (OOM beim Capture). CUDAGraphs
-    captured eager-Kernel direkt. expandable_segments + max-num-seqs 1.
-    Built for Olares 1.12.6.
+    v26.08.13: REVERT auf v0.23.1rc1 (cu129-nightly-4080263bb) — die bewaehrte 26.08.4-
+    Config: 200K + CUDAGraphs + torch.compile + 136 tok/s. v0.26.0-Experiment beendet:
+    MTP-Draft kollidiert mit Gemma4-MoE (mat-shape), CUDAGraph-Capture OOM (23.4/23.42 GiB)
+    auch ohne Inductor. fp8, kein MTP, kein skip-flag. Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
     v2.4.0: MTP Speculative Decoding reaktiviert. CUDAGraphs + torch.compile (enforce-eager entfernt) — 419 tok/s Coding, 280 tok/s Poetry (3.5× schneller). MAX_MODEL_LEN 200000→96000 (MTP + CUDAGraphs passen nicht in 24 GB auf V1 Engine). VLLM_USE_FLASHINFER_SAMPLER=0 (Blackwell SM120 Fix). Remove enable-chunked-prefill (overhead). Needle Haystack 100% (25/25), Agentic 100% (8/8).
@@ -60,8 +59,8 @@ spec:
     200K token context. Multimodal (text + image, no video).
 
     **Inference Engine**
-    vLLM v0.26.0 cu129 with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
-    fp8 KV-Cache. CUDAGraphs (torch.compile aus).
+    vLLM v0.23.1rc cu129, SHA-pinned (g4080263bb) with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
+    fp8 KV-Cache. CUDAGraphs + torch.compile.
     Native hybrid SWA: 5 full-attention layers for long context, 25 sliding-window layers bounded.
     GPU VRAM: ~22.5 GB.
 
