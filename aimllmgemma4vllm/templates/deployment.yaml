@@ -79,10 +79,10 @@ spec:
         - '{"enable_thinking": true}'
         - --generation-config
         - vllm
-        - --enforce-eager
         # v0.26.0: MTP-Draft (google/gemma-4-26B-A4B-it-assistant) kollidiert mit Gemma4-MoE
-        # (mat-shape 3840 vs 5632) beim Memory-Profiling — Draft raus. enforce-eager bleibt
-        # (torch.compile crasht ebenfalls mit Gemma4-MoE).
+        # (mat-shape 3840 vs 5632) beim Memory-Profiling — Draft raus.
+        # enforce-eager NICHT setzen: torch.compile+CUDAGraphs crashen nur MIT MTP
+        # (Dynamo fake-tensor); ohne MTP laufen sie (26.08.4-Beweis: 136 tok/s @200k).
         envFrom:
         - configMapRef:
             name: aimllmgemma4vllm-env
