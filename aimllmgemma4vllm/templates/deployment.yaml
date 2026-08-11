@@ -57,7 +57,8 @@ spec:
         - --max-num-batched-tokens
         - {{ .Values.env.MAX_NUM_BATCHED_TOKENS | quote }}
         - --attention-backend
-        - triton_attn
+        - flash_attn
+        # nvfp4-KV braucht FLASH_ATTN (triton_attn: 'kv_cache_dtype not supported')
         - --kv-cache-dtype
         - nvfp4
         - --dtype
