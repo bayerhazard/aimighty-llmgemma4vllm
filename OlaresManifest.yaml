@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.5'
+  version: '26.08.6'
   categories:
     - AI
     - Vision
@@ -25,12 +25,11 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.5'
+  versionName: '26.08.6'
   upgradeDescription: |
-    v26.08.5: vLLM-Update v0.23.1rc1-dev -> v0.26.0-cu129. Gemma4-Fixes (#47091/#47332/
-    #47217) + per-KV-group backend (#48012) + SWA-Capability (#48011). MTP reaktiviert +
-    skip-layers sliding_window (Test: 200K+MTP auf neuer per-layer-KV-Logik).
-    Built for Olares 1.12.6.
+    v26.08.6: vLLM v0.26.0-cu129 + MTP + enforce-eager (torch.compile crasht mit
+    Gemma4-MoE+MTP auf v0.26.0 — enforce-eager deaktiviert Dynamo/CUDAGraphs).
+    Test: 200K+MTP. Built for Olares 1.12.6.
     v2.3.0: Voller 200K-Kontext zurück.  Root-Cause des 200k-Crashs war NICHT der KV-Bedarf selbst, sondern der MM-Video-Profiler (fraß 3.5 GiB → nur 2.52 GiB für KV). Mit video:0 + batch 8192 + util 0.98 stehen 4.77 GiB für KV → Pool 267k Tokens. Hybride SWA-Amortisation: nur 5 Full-Attention-Layer zahlen Langkontext (~10 KB/Tok fp8), 25 Sliding-Layer (window 1024) amortisieren. TurboQuant-4-bit-KV evaluiert und verworfen: in diesem Build inkompatibel mit Gemma4 (TURBOQUANT-Backend: kein sliding-window/multimodal; FLASH_ATTN: Vision-mm_prefix braucht FA v4, TQ erzwingt FA ≤2; TRITON_ATTN: kein TQ-dtype). cpu-offload nicht nötig. Verifiziert: Pool 267k, Langkontext-Inference OK, ~33-37 tok/s.
     v2.2.2: Olares 1.12.6 Reparatur. Image→SHA-gepinnter cu129-nightly (g4080263bb, enthält PR #40708 weight_packed-Fix — gemma4-0505-cu130 war 4 Tage zu alt und crashte). KV-Cache-Fix: video:0 im --limit-mm-per-prompt (Nightly-Profiler allokierte sonst ~3 GiB für 6 Video-Items), MAX_NUM_BATCHED_TOKENS 16384→8192 (halbiert MM-Encoder-Cache), GPU_MEMORY_UTILIZATION 0.95→0.98, MAX_MODEL_LEN 200000→96000 (interim). Verifiziert: Pod 2/2, /health 200, Inference OK.
     v2.2.1: gemma4 tag→gemma4-0505-cu130 (Blackwell CUDA 13.0, Mai 2026). Fixes KeyError: weight_packed (MoE AWQ INT4 Expert-Loading in altem gemma4 Tag).

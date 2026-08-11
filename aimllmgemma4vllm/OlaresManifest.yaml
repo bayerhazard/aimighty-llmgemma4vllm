@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.5'
+  version: '26.08.6'
   categories:
     - AI
     - Vision
@@ -25,13 +25,11 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.5'
+  versionName: '26.08.6'
   upgradeDescription: |
-    v26.08.5: vLLM-Update v0.23.1rc1-dev -> v0.26.0-cu129. Enthaelt Gemma4-Fixes
-    (#47091 MTP quant, #47332 FA4 mm_prefix, #47217 image bidir sliding) + per-KV-group
-    attention backend (#48012) + sliding-window als explizite Capability (#48011) —
-    Grundlage fuer korrektes 200K-SWA-Bounding. MTP reaktiviert + kv-cache-dtype-
-    skip-layers sliding_window (Test: 200K + MTP auf neuer per-layer-KV-Logik).
+    v26.08.6: vLLM v0.26.0-cu129 + MTP + enforce-eager. v0.26.0: torch.compile crasht
+    mit Gemma4-MoE+MTP (TorchRuntimeError fake-tensor Shape-Mismatch) — enforce-eager
+    deaktiviert Dynamo/CUDAGraphs (Speed-Einbusse, aber Start moeglich). Test: 200K+MTP.
     Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
