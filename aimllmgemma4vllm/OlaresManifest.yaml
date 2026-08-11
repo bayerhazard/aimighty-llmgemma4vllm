@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.17'
+  version: '26.08.18'
   categories:
     - AI
     - Vision
@@ -25,10 +25,12 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.17'
+  versionName: '26.08.18'
   upgradeDescription: |
-    v26.08.17: NVFP4-KV fix — attention-backend flash_attn (triton_attn lehnt
-    nvfp4-KV ab: 'kv_cache_dtype not supported'). NVFP4-Gewichte + nvfp4-KV.
+    v26.08.18: REVERT auf bewaehrten Stand (AWQ-INT4 + fp8-KV + triton_attn).
+    NVFP4-Evaluation beendet: Gewichte nur ~1 GiB Einsparung (15 vs 16 GiB),
+    nvfp4-KV nicht auf SM120 verfuegbar ('FP8 KV requires FA3 SM90 / FA4 SM100',
+    RTX 5090 = SM120) — triton_attn und flash_attn lehnen beide ab.
     Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
