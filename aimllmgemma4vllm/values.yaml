@@ -34,7 +34,7 @@ resources:
     nvidia.com/gpu: 1
 
 env:
-  MODEL_NAME: unsloth/gemma-4-26B-A4B-it-NVFP4
+  MODEL_NAME: cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4
   MODEL_ALIAS: gemma-4-26b-vllm
   # 200000: Ziel-Langkontext. Hybride SWA-Amortisation (5 Full-Attn-Layer zahlen
   # Langkontext (~10 KB/Tok fp8, V1), 25 Sliding-Layer window 1024 amortisieren).
