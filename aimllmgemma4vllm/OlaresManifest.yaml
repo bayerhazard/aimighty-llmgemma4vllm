@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.18'
+  version: '26.08.20'
   categories:
     - AI
     - Vision
@@ -25,38 +25,15 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.18'
+  versionName: '26.08.20'
   upgradeDescription: |
-    v26.08.18: REVERT auf bewaehrten Stand (AWQ-INT4 + fp8-KV + triton_attn).
-    NVFP4-Evaluation beendet: Gewichte nur ~1 GiB Einsparung (15 vs 16 GiB),
-    nvfp4-KV nicht auf SM120 verfuegbar ('FP8 KV requires FA3 SM90 / FA4 SM100',
-    RTX 5090 = SM120) — triton_attn und flash_attn lehnen beide ab.
-    Built for Olares 1.12.6.
-    v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
+    v26.08.20: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
-    v2.4.0: MTP Speculative Decoding reaktiviert. CUDAGraphs + torch.compile (enforce-eager entfernt) — 419 tok/s Coding, 280 tok/s Poetry (3.5× schneller). MAX_MODEL_LEN 200000→96000 (MTP + CUDAGraphs passen nicht in 24 GB auf V1 Engine). VLLM_USE_FLASHINFER_SAMPLER=0 (Blackwell SM120 Fix). Remove enable-chunked-prefill (overhead). Needle Haystack 100% (25/25), Agentic 100% (8/8).
-    v2.2.2: Olares 1.12.6 Reparatur. Image→SHA-gepinnter cu129-nightly (g4080263bb, enthält PR #40708 weight_packed-Fix — gemma4-0505-cu130 war 4 Tage zu alt und crashte). KV-Cache-Fix: video:0 im --limit-mm-per-prompt (Nightly-Profiler allokierte sonst ~3 GiB für 6 Video-Items), MAX_NUM_BATCHED_TOKENS 16384→8192 (halbiert MM-Encoder-Cache), GPU_MEMORY_UTILIZATION 0.95→0.98, MAX_MODEL_LEN 200000→96000 (interim). Verifiziert: Pod 2/2, /health 200, Inference OK.
-    v2.2.1: gemma4 tag→gemma4-0505-cu130 (Blackwell CUDA 13.0, Mai 2026). Fixes KeyError: weight_packed (MoE AWQ INT4 Expert-Loading in altem gemma4 Tag).
-    v2.2.0: vLLM gemma4 tag (CUDA 12.9, transformers mit Gemma4-Support). ohne Draft-MTP (transformers zu alt für assistant model). enforce-eager (torch.compile inkompatibel mit Gemma4 26B MoE). owner: aimighty fix (GPUBinding).
-    v2.1.8: accelerator: [{mode: nvidia}] im OlaresManifest ergänzt (app-service v3 AutoSelectMode: ohne accelerator-Deklaration → "No matching GPU type" 400). GPU-Apps müssen den Modus explizit deklarieren. Install benötigt freie GPU (RTX 5090, ~22.5 GB VRAM) — nicht parallel zu aimqwen36llama betreibbar.
-    v2.1.7: HF_TOKEN auf .Values.olaresEnv.HF_TOKEN + envs-Sektion (v3: OLARES_USER_* in chart files verboten).
-    v2.1.6: deployment.replicas auf .Values.workloads.aimllmgemma4vllm.replicaCount umgestellt (app-service v3-Validation: replicas muss aus values.yaml workloads.<name>.replicaCount stammen).
-    v2.1.5: Olares-Dependency auf >=1.12.6-0 gesetzt (apiVersion v3 erfordert Olares 1.12.6+).
-    v2.1.4: Migrate OlaresManifest v2 → v3 (olaresManifest.version 0.10.0 → 0.12.0, apiVersion v2 → v3, workloadReplicas ergänzt). App-service auf Olares 1.12.6 lehnt apiVersion v2 ab ("app with apiVersion v2 is incompatible and cannot be install", HTTP 403).
-    v2.1.3: Cluster-Compat-Fixes — runtimeClassName: nvidia entfernt (bypassed Olares-HAMi, "No compatible compute resources"), nodeSelector olares-worker entfernt (Node heißt "olares", Pod war unschedulbar), Chart dem Market hinzugefügt (fehlte in _lib.ts → 404), upgradeDescription im Market korrigiert.
-    v2.1.0: Fix Helm ownership metadata on ConfigMap — re-enables clean upgrades.
-    v2.0.9: Added ConfigMap for env vars. Env vars now hot-reloadable via kubectl edit configmap.
-    v2.0.8: Pinned to olares-worker (RTX 5090). Removed --kv-offloading-size + --quantization. FP8-only AWQ at 200k.
-    v2.0.5: Reduce MAX_MODEL_LEN 200000→147500.
-    v2.0.4: Bump GPU_MEMORY_UTILIZATION 0.975→0.985.
-    v2.0.3: Force re-sync (hash collision fix).
-    v2.0.2: Added --kv-cache-dtype-skip-layers sliding_window (FP16 for sliding-window layers) + --calculate-kv-scales (dynamic FP8 KV scale calibration) + --kv-offloading-size 24GiB (CPU swap for long-context preemption) + --quantization compressed-tensors (explicit). Renamed to "AIM Gemma4 26B-A4B vLLM".
-    v2.0.0: Complete restructure. Renamed to aimllmgemma4vllm. Switched from bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 to cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 with MTP speculative decoding. New image vllm/vllm-openai:v0.23.0. Added triton_attn backend, fp8 KV cache, gemma4 tool calling. Removed NVFP4 patches (gemma4.py, fused_moe_layer.py). Follows vLLM Qwen36 chart conventions.
   fullDescription: |
     Gemma 4 26B A4B — multimodal LLM (text + image) with QAT-AWQ-INT4 quantization on vLLM.
 
     **Model**
-    cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 (QAT + AWQ INT4, ~15 GB).
+    cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 (QAT + AWQ INT4, ~16 GB).
     200K token context. Multimodal (text + image, no video).
 
     **Inference Engine**
@@ -67,6 +44,7 @@ spec:
 
     **Performance (RTX 5090 Blackwell)**
     - 200K token context
+    - ~136 tok/s generation
     - Needle Haystack: 25/25 (100%)
     - Agentic Tool-Calling: 8/8 (100%)
 
@@ -78,7 +56,7 @@ spec:
     **Resource Usage**
     GPU: ~22.5 GB VRAM (RTX 5090, 24 GB)
     RAM: 24-40 GB
-    Disk: 50 GB (model download ~15 GB + cache)
+    Disk: 50 GB (model download ~16 GB + cache)
     CPU: 4-16 cores
 
   developer: Aimighty
