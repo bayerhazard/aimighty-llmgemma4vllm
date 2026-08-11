@@ -79,6 +79,11 @@ spec:
         - '{"enable_thinking": true}'
         - --generation-config
         - vllm
+        - --compilation-config
+        - mode=none
+        # v0.26.0: torch.compile (Inductor) frisst zuviel VRAM (Modell 16G + 200k-KV +
+        # Compile-Arbeitspuffer + CUDAGraph = 23.34/23.42 GiB -> OOM beim Capture).
+        # mode=none: CUDAGraphs bleiben aktiv (capturen eager-Kernel), Inductor aus.
         # v0.26.0: MTP-Draft (google/gemma-4-26B-A4B-it-assistant) kollidiert mit Gemma4-MoE
         # (mat-shape 3840 vs 5632) beim Memory-Profiling — Draft raus.
         # enforce-eager NICHT setzen: torch.compile+CUDAGraphs crashen nur MIT MTP
