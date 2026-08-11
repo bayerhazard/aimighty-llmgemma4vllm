@@ -57,7 +57,7 @@ spec:
         - --max-num-batched-tokens
         - {{ .Values.env.MAX_NUM_BATCHED_TOKENS | quote }}
         - --attention-backend
-        - flashinfer
+        - triton_attn
         - --kv-cache-dtype
         - fp8
         - --dtype
