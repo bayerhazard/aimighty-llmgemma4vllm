@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.13'
+  version: '26.08.14'
   categories:
     - AI
     - Vision
@@ -25,12 +25,11 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.13'
+  versionName: '26.08.14'
   upgradeDescription: |
-    v26.08.13: REVERT auf v0.23.1rc1 (cu129-nightly-4080263bb) — die bewaehrte 26.08.4-
-    Config: 200K + CUDAGraphs + torch.compile + 136 tok/s. v0.26.0-Experiment beendet:
-    MTP-Draft kollidiert mit Gemma4-MoE (mat-shape), CUDAGraph-Capture OOM (23.4/23.42 GiB)
-    auch ohne Inductor. fp8, kein MTP, kein skip-flag. Built for Olares 1.12.6.
+    v26.08.14: NVFP4-Gewichte (unsloth/gemma-4-26B-A4B-it-NVFP4) statt AWQ-INT4 —
+    MoE 4-bit (nvfp4-pack), Attention fp8-E4M3. Ziel: ~4 GiB VRAM-Einsparung
+    (mehr KV-Pool oder 200K+MTP). v0.23.1rc1-Engine bleibt. Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
     v2.4.0: MTP Speculative Decoding reaktiviert. CUDAGraphs + torch.compile (enforce-eager entfernt) — 419 tok/s Coding, 280 tok/s Poetry (3.5× schneller). MAX_MODEL_LEN 200000→96000 (MTP + CUDAGraphs passen nicht in 24 GB auf V1 Engine). VLLM_USE_FLASHINFER_SAMPLER=0 (Blackwell SM120 Fix). Remove enable-chunked-prefill (overhead). Needle Haystack 100% (25/25), Agentic 100% (8/8).
