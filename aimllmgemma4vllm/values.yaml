@@ -11,9 +11,11 @@ olaresEnv:
 
 image:
   repository: vllm/vllm-openai
-  # SHA-pinned nightly = exakt der verifizierte Build (v0.23.1rc1.dev1403+g4080263bb).
-  # Enthaelt PR #40708 (weight_packed KeyError Fix). gemma4/gemma4-0505-cu130 crashen.
-  tag: cu129-nightly-4080263bb2c5d10deac17aaeb88e0823bc35bca9
+  # v0.26.0 (27.07.2026): enthaelt Gemma4-Fixes (#47091 MTP quant, #47332 FA4 mm_prefix,
+  # #47217 image bidir sliding) + per-KV-group attention backend (#48012) +
+  # sliding-window als explizite Capability (#48011) — Grundlage fuer korrektes
+  # 200K-SWA-Bounding. PR #40708 (weight_packed) enthalten.
+  tag: v0.26.0-cu129
   pullPolicy: IfNotPresent
 
 nameOverride: ""

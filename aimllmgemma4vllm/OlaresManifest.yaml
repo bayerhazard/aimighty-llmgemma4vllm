@@ -9,10 +9,10 @@ workloadReplicas:
 metadata:
   name: aimllmgemma4vllm
   icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
-  description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
+  description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.4'
+  version: '26.08.5'
   categories:
     - AI
     - Vision
@@ -25,12 +25,13 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.4'
+  versionName: '26.08.5'
   upgradeDescription: |
-    v26.08.4: 200K-Kontext aktiv — MTP/Draft-Modell entfernt (assistant-Modell frisst
-    ~2 GiB VRAM; ohne es steht genug KV-Budget fuer 200K zur Verfuegung). Native hybride
-    SWA-Amortisation: 5 Full-Attn-Layer (globalKV 2x512) zahlen Langkontext, 25 Sliding
-    (localKV 8x256, w1024) bounded. fp8, kein skip-layers-Flag. CUDAGraphs bleiben.
+    v26.08.5: vLLM-Update v0.23.1rc1-dev -> v0.26.0-cu129. Enthaelt Gemma4-Fixes
+    (#47091 MTP quant, #47332 FA4 mm_prefix, #47217 image bidir sliding) + per-KV-group
+    attention backend (#48012) + sliding-window als explizite Capability (#48011) —
+    Grundlage fuer korrektes 200K-SWA-Bounding. MTP reaktiviert + kv-cache-dtype-
+    skip-layers sliding_window (Test: 200K + MTP auf neuer per-layer-KV-Logik).
     Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
@@ -60,8 +61,9 @@ spec:
     200K token context. Multimodal (text + image, no video).
 
     **Inference Engine**
-    vLLM v0.23.1rc cu129, SHA-pinned (g4080263bb) with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
+    vLLM v0.26.0 cu129 with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
     fp8 KV-Cache. CUDAGraphs + torch.compile.
+    MTP Speculative Decoding (3 tokens, google/gemma-4-26B-A4B-it-assistant).
     Native hybrid SWA: 5 full-attention layers for long context, 25 sliding-window layers bounded.
     GPU VRAM: ~22.5 GB.
 

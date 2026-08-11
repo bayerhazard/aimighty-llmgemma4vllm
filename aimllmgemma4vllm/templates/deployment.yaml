@@ -60,6 +60,8 @@ spec:
         - triton_attn
         - --kv-cache-dtype
         - fp8
+        - --kv-cache-dtype-skip-layers
+        - sliding_window
         - --dtype
         - auto
         - --trust-remote-code
@@ -79,6 +81,8 @@ spec:
         - '{"enable_thinking": true}'
         - --generation-config
         - vllm
+        - --speculative-config
+        - '{"model":"google/gemma-4-26B-A4B-it-assistant","method":"mtp","num_speculative_tokens":3}'
         envFrom:
         - configMapRef:
             name: aimllmgemma4vllm-env

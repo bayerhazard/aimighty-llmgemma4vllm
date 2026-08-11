@@ -1,6 +1,6 @@
 apiVersion: v2
-appVersion: 26.08.4
-description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
+appVersion: 26.08.5
+description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
 home: https://github.com/bayerhazard/aimighty-llmgemma4vllm
 maintainers:
 - email: admin@aimighty.local
@@ -9,4 +9,4 @@ name: aimllmgemma4vllm
 sources:
 - https://github.com/bayerhazard/aimighty-llmgemma4vllm
 type: application
-version: 26.08.4
+version: 26.08.5
