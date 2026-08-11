@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.7'
+  version: '26.08.8'
   categories:
     - AI
     - Vision
@@ -25,11 +25,11 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.7'
+  versionName: '26.08.8'
   upgradeDescription: |
-    v26.08.7: vLLM v0.26.0-cu129, MTP entfernt (Draft-Modell kollidiert mit Gemma4-MoE
-    beim Memory-Profiling: mat-shape 3840 vs 5632). enforce-eager (torch.compile crasht
-    ebenfalls). Test: 200K + skip-layers sliding_window auf neuer per-KV-group-Logik.
+    v26.08.8: vLLM v0.26.0-cu129 (Gemma4-Fixes + per-KV-group-Backend). skip-layers-
+    Flag entfernt (erzwang BF16 voller Laenge -> 8.55 GiB-Estimate, identisch zu v0.23).
+    200K nur ohne MTP + ohne skip-flag: fp8 native SWA-Amortisation. enforce-eager.
     Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
