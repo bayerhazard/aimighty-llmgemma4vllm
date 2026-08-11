@@ -59,7 +59,7 @@ spec:
         - --attention-backend
         - triton_attn
         - --kv-cache-dtype
-        - fp8
+        - nvfp4
         - --dtype
         - auto
         - --trust-remote-code
