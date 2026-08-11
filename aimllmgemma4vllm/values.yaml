@@ -44,7 +44,7 @@ env:
   # V1-Bedarf ~28 KiB/Tok-Äquivalent (Full-Attn-Anteil) → Pool-Ziel ~267k Tokens.
   MAX_MODEL_LEN: "200000"
   GPU_MEMORY_UTILIZATION: "0.98"
-  MAX_NUM_SEQS: "2"
+  MAX_NUM_SEQS: "1"
   # 8192: Encoder-Cache-Budget = max_num_batched_tokens → halbiert MM-Profiling-Speicher.
   MAX_NUM_BATCHED_TOKENS: "8192"
   VLLM_EXTRA_ARGS: --generation-config vllm

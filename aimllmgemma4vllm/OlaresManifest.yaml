@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.9'
+  version: '26.08.10'
   categories:
     - AI
     - Vision
@@ -25,11 +25,12 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.9'
+  versionName: '26.08.10'
   upgradeDescription: |
-    v26.08.9: vLLM v0.26.0-cu129, kein MTP, kein skip-flag, CUDAGraphs+torch.compile
-    wieder AKTIV (crashen nur mit MTP-Draft; ohne MTP bewiesen 136 tok/s @200k in 26.08.4).
-    fp8 native SWA-Amortisation. Built for Olares 1.12.6.
+    v26.08.10: vLLM v0.26.0-cu129, CUDAGraphs+torch.compile aktiv. OOM-Fix beim
+    Graph-Capture: PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True (Fragmentierung)
+    + max-num-seqs 2->1 (kleinere Capture-Sizes, weniger Workspace).
+    Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
     v2.4.0: MTP Speculative Decoding reaktiviert. CUDAGraphs + torch.compile (enforce-eager entfernt) — 419 tok/s Coding, 280 tok/s Poetry (3.5× schneller). MAX_MODEL_LEN 200000→96000 (MTP + CUDAGraphs passen nicht in 24 GB auf V1 Engine). VLLM_USE_FLASHINFER_SAMPLER=0 (Blackwell SM120 Fix). Remove enable-chunked-prefill (overhead). Needle Haystack 100% (25/25), Agentic 100% (8/8).

@@ -99,6 +99,10 @@ spec:
           value: nvidia
         - name: VLLM_USE_FLASHINFER_SAMPLER
           value: "0"
+        - name: PYTORCH_CUDA_ALLOC_CONF
+          # Fragmentierung reduzieren — v0.26.0 CUDAGraph-Capture + Modell + 200k-KV
+          # passen sonst nicht in 24 GB (OOM 88 MiB bei 23.36 GiB in use).
+          value: "expandable_segments:True"
         ports:
         - containerPort: {{ .Values.service.port }}
           protocol: TCP
