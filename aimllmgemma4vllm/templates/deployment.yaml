@@ -82,10 +82,9 @@ spec:
         - --generation-config
         - vllm
         - --enforce-eager
-        # v0.26.0: torch.compile crasht mit Gemma4-MoE+MTP (TorchRuntimeError fake-tensor
-        # Shape-Mismatch). enforce-eager deaktiviert Dynamo/CUDAGraphs — Speed sinkt, startet aber.
-        - --speculative-config
-        - '{"model":"google/gemma-4-26B-A4B-it-assistant","method":"mtp","num_speculative_tokens":3}'
+        # v0.26.0: MTP-Draft (google/gemma-4-26B-A4B-it-assistant) kollidiert mit Gemma4-MoE
+        # (mat-shape 3840 vs 5632) beim Memory-Profiling — Draft raus. enforce-eager bleibt
+        # (torch.compile crasht ebenfalls mit Gemma4-MoE).
         envFrom:
         - configMapRef:
             name: aimllmgemma4vllm-env

@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, MTP, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.6'
+  version: '26.08.7'
   categories:
     - AI
     - Vision
@@ -25,11 +25,11 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.6'
+  versionName: '26.08.7'
   upgradeDescription: |
-    v26.08.6: vLLM v0.26.0-cu129 + MTP + enforce-eager. v0.26.0: torch.compile crasht
-    mit Gemma4-MoE+MTP (TorchRuntimeError fake-tensor Shape-Mismatch) — enforce-eager
-    deaktiviert Dynamo/CUDAGraphs (Speed-Einbusse, aber Start moeglich). Test: 200K+MTP.
+    v26.08.7: vLLM v0.26.0-cu129, MTP entfernt (Draft-Modell kollidiert mit Gemma4-MoE
+    beim Memory-Profiling: mat-shape 3840 vs 5632). enforce-eager (torch.compile crasht
+    ebenfalls). Test: 200K + skip-layers sliding_window auf neuer per-KV-group-Logik.
     Built for Olares 1.12.6.
     v26.08.1: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
     categories AI + Vision, English descriptions. Built for Olares 1.12.6.
@@ -61,7 +61,6 @@ spec:
     **Inference Engine**
     vLLM v0.26.0 cu129 with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
     fp8 KV-Cache. CUDAGraphs + torch.compile.
-    MTP Speculative Decoding (3 tokens, google/gemma-4-26B-A4B-it-assistant).
     Native hybrid SWA: 5 full-attention layers for long context, 25 sliding-window layers bounded.
     GPU VRAM: ~22.5 GB.
 
