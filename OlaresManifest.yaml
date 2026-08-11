@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.20'
+  version: '26.08.21'
   categories:
     - AI
     - Vision
@@ -25,10 +25,10 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.20'
+  versionName: '26.08.21'
   upgradeDescription: |
-    v26.08.20: Unified naming — title "AIM Gemma 4 26B A4B" (engine suffix removed),
-    categories AI + Vision, English descriptions. Built for Olares 1.12.6.
+    v26.08.21: FlashInfer-Attention-Backend (Test), Sampler bleibt aus.
+    Built for Olares 1.12.6.
   fullDescription: |
     Gemma 4 26B A4B – Multimodales LLM (Text + Image) mit QAT-AWQ-INT4 Quantisierung auf vLLM.
 
