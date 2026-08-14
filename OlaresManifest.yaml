@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.23'
+  version: '26.08.24'
   categories:
     - AI
     - Vision
@@ -25,13 +25,14 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.23'
+  versionName: '26.08.24'
   upgradeDescription: |
-    v26.08.23: vLLM upgrade to stable v0.27.1-cu129 (SHA-pinned) — Gemma-4 ViT
-    CUDA graph (#46837), JIT warmup (#47451/#49903), SM120/121 kernel fix
-    (#49904), torch 2.13. KV cache: fp8 + --kv-cache-dtype-skip-layers
-    sliding_window (SWA layers stay BF16). triton_attn kept — FlashInfer still
-    unsupported on SM120 for Gemma-4 vision (#40677). Built for Olares 1.12.6.
+    v26.08.24: vLLM Nightly 2026-08-14 cu129 (SHA-pinned) — v0.27.1-Stable-Image
+    war fuer Gemma 4 defekt (transformers 5.15.0 bricht Config-Parsing, #51744);
+    Fix PR #49797 erst in main. Behaelt v0.27.1-Features: Gemma-4 ViT CUDA graph,
+    JIT warmup, SM120/121 fix. KV cache: fp8 + --kv-cache-dtype-skip-layers
+    sliding_window (SWA layers stay BF16). triton_attn kept (#40677 open).
+    Built for Olares 1.12.6.
   fullDescription: |
     Gemma 4 26B A4B – Multimodal LLM (Text + Image) with QAT-AWQ-INT4 quantization on vLLM.
 
@@ -40,7 +41,7 @@ spec:
     200K Token Kontext. Multimodal (Text + Image, kein Video).
 
     **Inference Engine**
-    vLLM v0.27.1 stable cu129, SHA-pinned (v0.27.1-cu129) with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
+    vLLM nightly 2026-08-14 cu129, SHA-pinned (cu129-nightly-ac7509e2) with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
     fp8 KV-Cache (sliding-window layers kept BF16 via --kv-cache-dtype-skip-layers). CUDAGraphs + torch.compile.
     Native hybrid SWA: 5 full-attention layers for long context, 25 sliding-window layers bounded.
     GPU VRAM: ~22.5 GB.
