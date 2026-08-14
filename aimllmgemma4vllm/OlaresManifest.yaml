@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.24'
+  version: '26.08.25'
   categories:
     - AI
     - Vision
@@ -25,13 +25,12 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.24'
+  versionName: '26.08.25'
   upgradeDescription: |
-    v26.08.24: vLLM Nightly 2026-08-14 cu129 (SHA-pinned) — v0.27.1-Stable-Image
-    war fuer Gemma 4 defekt (transformers 5.15.0 bricht Config-Parsing, #51744);
-    Fix PR #49797 erst in main. Behaelt v0.27.1-Features: Gemma-4 ViT CUDA graph,
-    JIT warmup, SM120/121 fix. KV cache: fp8 + --kv-cache-dtype-skip-layers
-    sliding_window (SWA layers stay BF16). triton_attn kept (#40677 open).
+    v26.08.25: skip-layers-Test (26.08.24) beendet — --kv-cache-dtype-skip-layers
+    sliding_window sprengte das KV-Budget (8.55 GiB nötig vs 4.67 GiB frei, Sliding-
+    Layer nicht window-bounded allokiert). Revert: fp8 auf allen Layern. Nightly
+    2026-08-14 cu129 (ac7509e2) mit Gemma-4/transformers-5.15-Fix (#49797) bleibt.
     Built for Olares 1.12.6.
   fullDescription: |
     Gemma 4 26B A4B — multimodal LLM (text + image) with QAT-AWQ-INT4 quantization on vLLM.
@@ -42,7 +41,7 @@ spec:
 
     **Inference Engine**
     vLLM nightly 2026-08-14 cu129, SHA-pinned (cu129-nightly-ac7509e2) with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
-    fp8 KV-Cache (sliding-window layers kept BF16 via --kv-cache-dtype-skip-layers). CUDAGraphs + torch.compile.
+    fp8 KV-Cache (all layers). CUDAGraphs + torch.compile.
     Native hybrid SWA: 5 full-attention layers for long context, 25 sliding-window layers bounded.
     GPU VRAM: ~22.5 GB.
 
