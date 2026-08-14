@@ -39,13 +39,12 @@ resources:
 env:
   MODEL_NAME: cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4
   MODEL_ALIAS: gemma-4-26b-vllm
-  # 200000: Ziel-Langkontext. Hybride SWA-Amortisation (5 Full-Attn-Layer zahlen
-  # Langkontext (~10 KB/Tok fp8, V1), 25 Sliding-Layer window 1024 amortisieren).
-  # skip-layers-Test (26.08.24) beendet: --kv-cache-dtype-skip-layers sliding_window
-  # sprengte das KV-Budget (8.55 GiB nötig vs 4.67 GiB frei) — Sliding-Layer wurden
-  # offenbar NICHT window-bounded allokiert. fp8 auf ALLEN Layern bleibt (Default).
-  # V1-Bedarf ~28 KiB/Tok-Äquivalent (Full-Attn-Anteil) → Pool-Ziel ~267k Tokens.
-  MAX_MODEL_LEN: "200000"
+  # MTP-Experiment (26.08.26/27): Draft google/gemma-4-26B-A4B-it-assistant kostet
+  # ~2 GiB VRAM => KV-Budget 4.69 -> 2.66 GiB. 200K fp8 braucht 3.57 GiB (est. max
+  # 104224). Kompromiss fuer Perf-Test: max_model_len 100000 (KV-Bedarf ~1.79 GiB,
+  # passt). MTP-Pfad laeuft jetzt (kein mat-shape-Fehler, #47091/#48892 im Nightly).
+  # Hybride SWA: 5 Full-Attn-Layer zahlen Langkontext, 25 Sliding window 1024.
+  MAX_MODEL_LEN: "100000"
   GPU_MEMORY_UTILIZATION: "0.98"
   MAX_NUM_SEQS: "2"
   # 8192: Encoder-Cache-Budget = max_num_batched_tokens → halbiert MM-Profiling-Speicher.
