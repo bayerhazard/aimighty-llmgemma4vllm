@@ -79,12 +79,6 @@ spec:
         - '{"enable_thinking": true}'
         - --generation-config
         - vllm
-        # MTP/Draft-Experiment (26.08.26): google/gemma-4-26B-A4B-it-assistant
-        # (4-Layer-MTP-Drafter, ~420 MB bf16). Fruehere Fehler (mat-shape 3840 vs
-        # 5632, CUDAGraph-OOM) waren v0.26.0 ohne Fixes; jetzt #47091 + #48892 +
-        # #49797 im Nightly ac7509e2. num_speculative_tokens: n_predict=None => gesetzt.
-        - --speculative-config
-        - '{"method":"mtp","model":"google/gemma-4-26B-A4B-it-assistant","num_speculative_tokens":3}'
         envFrom:
         - configMapRef:
             name: aimllmgemma4vllm-env
