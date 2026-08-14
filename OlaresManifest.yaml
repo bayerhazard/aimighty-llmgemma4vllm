@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.28'
+  version: '26.08.29'
   categories:
     - AI
     - Vision
@@ -25,13 +25,13 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.28'
+  versionName: '26.08.29'
   upgradeDescription: |
-    v26.08.28: REVERT MTP-Experiment (26.08.26/27) — Zurueck auf bewaehrte
-    Baseline ohne Drafter: Nightly ac7509e2, fp8 all layers, max_model_len 200000.
-    MTP lief (kein mat-shape-Fehler), brachte ~185 tok/s aber kostete ~2 GiB VRAM
-    => 100K-Kontext und kein Parallelbetrieb-Margin. Entscheidung: 200K + 136 tok/s
-    statt 100K + ~185 tok/s. Built for Olares 1.12.6.
+    v26.08.29: Production-Haertung — GPU_MEMORY_UTILIZATION 0.98->0.96
+    (Sicherheitspuffer: 0.98 liess nur ~90 MB frei, CUDACachingAllocator-OOM
+    beim Warmup). KV-Pool ~4.1-4.2 GiB reicht fuer 200K (~3.57 GiB Bedarf).
+    VLLM_EXTRA_ARGS entfernt (toter Code, generation-config ist hart in args).
+    Built for Olares 1.12.6.
   fullDescription: |
     Gemma 4 26B A4B – Multimodal LLM (Text + Image) with QAT-AWQ-INT4 quantization on vLLM.
 
