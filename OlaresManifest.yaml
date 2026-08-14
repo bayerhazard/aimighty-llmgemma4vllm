@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.25'
+  version: '26.08.26'
   categories:
     - AI
     - Vision
@@ -25,12 +25,12 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.25'
+  versionName: '26.08.26'
   upgradeDescription: |
-    v26.08.25: skip-layers-Test (26.08.24) beendet — --kv-cache-dtype-skip-layers
-    sliding_window sprengte das KV-Budget (8.55 GiB nötig vs 4.67 GiB frei, Sliding-
-    Layer nicht window-bounded allokiert). Revert: fp8 auf allen Layern. Nightly
-    2026-08-14 cu129 (ac7509e2) mit Gemma-4/transformers-5.15-Fix (#49797) bleibt.
+    v26.08.26: MTP/Draft-Experiment — google/gemma-4-26B-A4B-it-assistant
+    (4-Layer-Drafter, ~420 MB) via --speculative-config method=mtp, 3 Tokens.
+    Fruehere Fehler (mat-shape 3840 vs 5632, CUDAGraph-OOM) waren v0.26.0 ohne
+    Fixes; #47091 + #48892 + #49797 sind im Nightly ac7509e2. Ziel >136 tok/s.
     Built for Olares 1.12.6.
   fullDescription: |
     Gemma 4 26B A4B – Multimodal LLM (Text + Image) with QAT-AWQ-INT4 quantization on vLLM.
