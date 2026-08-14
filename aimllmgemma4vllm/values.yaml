@@ -11,9 +11,10 @@ olaresEnv:
 
 image:
   repository: vllm/vllm-openai
-  # SHA-pinned nightly = exakt der verifizierte Build (v0.23.1rc1.dev1403+g4080263bb).
-  # Enthaelt PR #40708 (weight_packed KeyError Fix). gemma4/gemma4-0505-cu130 crashen.
-  tag: cu129-nightly-4080263bb2c5d10deac17aaeb88e0823bc35bca9
+  # Stable v0.27.1 (cu129) — SHA-pinned per Release-Tag. Gemma-4 ViT CUDA
+  # Graph (#46837), JIT-Warmup (#47451/#49903), SM120/121-Kernel-Fix (#49904),
+  # torch 2.13. PR #40708 (weight_packed) + MM-bidir (#40534) enthalten.
+  tag: v0.27.1-cu129
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -38,7 +39,8 @@ env:
   MODEL_ALIAS: gemma-4-26b-vllm
   # 200000: Ziel-Langkontext. Hybride SWA-Amortisation (5 Full-Attn-Layer zahlen
   # Langkontext (~10 KB/Tok fp8, V1), 25 Sliding-Layer window 1024 amortisieren).
-  # Mit skip-sliding-window entfällt FP8-Quantisierung auf bounded Sliding-KV.
+  # Skip-layers: Sliding-Window-Layer bleiben BF16 (bounded, fast kein Zusatz-VRAM),
+  # Full-Attn-Layer fp8 (empfohlen fuer hybride Modelle).
   # V1-Bedarf ~28 KiB/Tok-Äquivalent (Full-Attn-Anteil) → Pool-Ziel ~267k Tokens.
   MAX_MODEL_LEN: "200000"
   GPU_MEMORY_UTILIZATION: "0.98"
