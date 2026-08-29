@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.29'
+  version: '26.08.30'
   categories:
     - AI
     - Vision
@@ -25,12 +25,10 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.29'
+  versionName: '26.08.30'
   upgradeDescription: |
-    v26.08.29: Production-Haertung — GPU_MEMORY_UTILIZATION 0.98->0.96
-    (Sicherheitspuffer: 0.98 liess nur ~90 MB frei, CUDACachingAllocator-OOM
-    beim Warmup). KV-Pool ~4.1-4.2 GiB reicht fuer 200K (~3.57 GiB Bedarf).
-    VLLM_EXTRA_ARGS entfernt (toter Code, generation-config ist hart in args).
+    v26.08.30: vLLM-Update Nightly ac7509e2 -> Stable v0.28.0-cu129
+    (Gemma4-Fix #49797, MTP-CUDA-Graph-Fix #53884, parser-Fix #52430).
     Built for Olares 1.12.6.
   fullDescription: |
     Gemma 4 26B A4B – Multimodal LLM (Text + Image) with QAT-AWQ-INT4 quantization on vLLM.

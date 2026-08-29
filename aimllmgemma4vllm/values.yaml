@@ -11,12 +11,11 @@ olaresEnv:
 
 image:
   repository: vllm/vllm-openai
-  # v0.27.1-cu129 (Stable) ist fuer Gemma 4 DEFEKT: wurde mit unbounded
-  # transformers gebaut, das 1 Tag spaeter erschienene 5.15.0 bricht das
-  # Gemma-4-Config-Parsing (AmbiguousGlobalPerLayerAttributeError, #51744).
-  # Fix vLLM PR #49797 (merged 10.08.) erst in main/nightly.
-  # => Nightly 2026-08-14 SHA-pinned (enthaelt #49797 + torch 2.13).
-  tag: cu129-nightly-ac7509e2b1db40fec2f03dde1ed4e9dfdc2338c9
+  # v0.28.0-cu129 (Stable, 26.08.2026): enthaelt Gemma4-Fix #49797 (transformers
+  # 5.15.0-Config-Parsing — das v0.27.1-Problem), #53884 (Gemma4-MTP suppress_tokens
+  # CUDA-graph-safe), #52430 (parser enable_thinking), FlashInfer-SM12x (#49718),
+  # MoE-FP8-SwiGLU (#46845). 12 Tage stabil. SHA-pinned Release-Tag (reproduzierbar).
+  tag: v0.28.0-cu129
   pullPolicy: IfNotPresent
 
 nameOverride: ""
