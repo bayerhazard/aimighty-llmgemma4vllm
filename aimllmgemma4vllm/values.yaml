@@ -11,11 +11,12 @@ olaresEnv:
 
 image:
   repository: vllm/vllm-openai
-  # v0.28.0-cu129 (Stable, 26.08.2026): enthaelt Gemma4-Fix #49797 (transformers
-  # 5.15.0-Config-Parsing — das v0.27.1-Problem), #53884 (Gemma4-MTP suppress_tokens
-  # CUDA-graph-safe), #52430 (parser enable_thinking), FlashInfer-SM12x (#49718),
-  # MoE-FP8-SwiGLU (#46845). 12 Tage stabil. SHA-pinned Release-Tag (reproduzierbar).
-  tag: v0.28.0-cu129
+  # v0.29.0-cu129 (Stable, 09.09.2026): MRv2 jetzt Default fuer alle Modelle
+  # (#53183), CUDA-Graph-Memory-Reservation (#53306), Parser-Fixes #54089/#54218,
+  # Spec-Decode-Verbesserungen #48915/#52242. Identische Leistung wie v0.28.0
+  # (136.6 tok/s, Needle 25/25, Tool 9/9, 200K, KV-Pool 236.049). MTP bleibt AUS
+  # (MTP-VRAM-Overhead unveraendert: max 50.4K Kontext bei GPU_UTIL 0.96).
+  tag: v0.29.0-cu129
   pullPolicy: IfNotPresent
 
 nameOverride: ""

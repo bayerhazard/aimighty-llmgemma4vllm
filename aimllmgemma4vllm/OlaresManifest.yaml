@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.08.30'
+  version: '26.9.1'
   categories:
     - AI
     - Vision
@@ -25,13 +25,16 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.08.30'
+  versionName: '26.9.1'
   upgradeDescription: |
-    v26.08.30: vLLM-Update Nightly ac7509e2 -> Stable v0.28.0-cu129. Enthaelt
-    Gemma4-Fix #49797 (transformers 5.15.0-Config-Parsing, das v0.27.1-Problem),
-    #53884 (Gemma4-MTP suppress_tokens CUDA-graph-safe), #52430 (parser
-    enable_thinking), FlashInfer-SM12x (#49718). GPU_UTIL 0.96 bleibt.
-    Built for Olares 1.12.6.
+    v26.9.1: vLLM-Update Stable v0.28.0-cu129 -> Stable v0.29.0-cu129 (MRv2 ist
+    jetzt Default fuer alle Modelle, #53183; CUDA-Graph-Memory-Reservation #53306;
+    Parser-Fixes #54089/#54218; Spec-Decode-Verbesserungen #48915/#52242).
+    Identische Leistung wie v0.28.0 (136.6 tok/s, Needle 25/25, Tool 9/9,
+    200K-Kontext, KV-Pool 236.049). MTP bleibt deaktiviert (VRAM-Overhead:
+    max. 50.4K Kontext bei 0.96). GPU_UTIL 0.96. Built for Olares 1.12.6.
+    Hinweis: Wechsel von 26.08.X (Altformat) auf 26.9.1 erfordert einmalig
+    uninstall + install.
   fullDescription: |
     Gemma 4 26B A4B — multimodal LLM (text + image) with QAT-AWQ-INT4 quantization on vLLM.
 
@@ -40,16 +43,16 @@ spec:
     200K token context. Multimodal (text + image, no video).
 
     **Inference Engine**
-    vLLM nightly 2026-08-14 cu129, SHA-pinned (cu129-nightly-ac7509e2) with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
+    vLLM stable v0.29.0-cu129 with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
     fp8 KV-Cache (all layers). CUDAGraphs + torch.compile.
     Native hybrid SWA: 5 full-attention layers for long context, 25 sliding-window layers bounded.
     GPU VRAM: ~22.5 GB.
 
     **Performance (RTX 5090 Blackwell)**
     - 200K token context
-    - ~136 tok/s generation
-    - Needle Haystack: 25/25 (100%)
-    - Agentic Tool-Calling: 8/8 (100%)
+    - ~137 tok/s generation
+    - Needle Haystack: 25/25 (100%, incl. 131K/190K)
+    - Agentic Tool-Calling: 9/9 (100%)
 
     **API**
     OpenAI-compatible: /v1/chat/completions, /v1/models, /health.
