@@ -12,7 +12,7 @@ metadata:
   description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.9.1'
+  version: '26.9.2'
   categories:
     - AI
     - Vision
@@ -25,12 +25,9 @@ entrances:
     openMethod: window
     authLevel: internal
 spec:
-  versionName: '26.9.1'
+  versionName: '26.9.2'
   upgradeDescription: |
-    v26.9.1: vLLM-Update Stable v0.28.0-cu129 -> Stable v0.29.0-cu129
-    (MRv2-Default #53183, CUDA-Graph-Memory #53306, Parser-Fixes #54089/#54218).
-    Identische Leistung, 200K-Kontext. Built for Olares 1.12.6.
-    Wechsel von 26.08.X (Altformat) auf 26.9.1: einmalig uninstall + install.
+    Initial Release for AImighty Olares One
   fullDescription: |
     Gemma 4 26B A4B – Multimodal LLM (Text + Image) with QAT-AWQ-INT4 quantization on vLLM.
 
