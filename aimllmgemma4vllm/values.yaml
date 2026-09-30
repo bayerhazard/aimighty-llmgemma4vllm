@@ -1,76 +1,9 @@
-replicaCount: 1
-
+# Per-workload replica counts (keys match Deployment metadata.name and
+# workloadReplicas in OlaresManifest).
+#   aimllmgemma4vllm — engine Deployment (== appid / Release.Name)
+#   llminit          — llm-init / entrance Deployment
 workloads:
+  llminit:
+    replicaCount: 1
   aimllmgemma4vllm:
     replicaCount: 1
-
-# Olares-injected env (from OlaresManifest envs:). Default present so
-# standalone `helm template` renders without nil pointer; Olares overrides at install.
-olaresEnv:
-  HF_TOKEN: ""
-
-image:
-  repository: vllm/vllm-openai
-  # v0.29.0-cu129 (Stable, 09.09.2026): MRv2 jetzt Default fuer alle Modelle
-  # (#53183), CUDA-Graph-Memory-Reservation (#53306), Parser-Fixes #54089/#54218,
-  # Spec-Decode-Verbesserungen #48915/#52242. Identische Leistung wie v0.28.0
-  # (136.6 tok/s, Needle 25/25, Tool 9/9, 200K, KV-Pool 236.049). MTP bleibt AUS
-  # (MTP-VRAM-Overhead unveraendert: max 50.4K Kontext bei GPU_UTIL 0.96).
-  tag: v0.29.0-cu129
-  pullPolicy: IfNotPresent
-
-nameOverride: ""
-fullnameOverride: aimllmgemma4vllm
-
-service:
-  type: ClusterIP
-  port: 8000
-
-resources:
-  limits:
-    cpu: 16
-    memory: 40Gi
-    nvidia.com/gpu: 1
-  requests:
-    cpu: 4
-    memory: 24Gi
-    nvidia.com/gpu: 1
-
-env:
-  MODEL_NAME: cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4
-  MODEL_ALIAS: gemma-4-26b-vllm
-  # 200000: Ziel-Langkontext. Hybride SWA-Amortisation (5 Full-Attn-Layer zahlen
-  # Langkontext (~10 KB/Tok fp8, V1), 25 Sliding-Layer window 1024 amortisieren).
-  # skip-layers-Test (26.08.24) beendet: --kv-cache-dtype-skip-layers sliding_window
-  # sprengte das KV-Budget (8.55 GiB nötig vs 4.67 GiB frei) — Sliding-Layer wurden
-  # offenbar NICHT window-bounded allokiert. fp8 auf ALLEN Layern bleibt (Default).
-  # V1-Bedarf ~28 KiB/Tok-Äquivalent (Full-Attn-Anteil) → Pool-Ziel ~267k Tokens.
-  MAX_MODEL_LEN: "200000"
-  # 0.96: Sicherheitspuffer gegen transiente Allokationen (CUDA-Graph-Capture,
-  # Request-Spikes). 0.98 liess nur ~90 MB frei -> CUDACachingAllocator-OOM beim
-  # Warmup (26.08.28). KV-Pool ~4.1-4.2 GiB reicht fuer 200K (Bedarf ~3.57 GiB).
-  GPU_MEMORY_UTILIZATION: "0.96"
-  MAX_NUM_SEQS: "2"
-  # 8192: Encoder-Cache-Budget = max_num_batched_tokens → halbiert MM-Profiling-Speicher.
-  MAX_NUM_BATCHED_TOKENS: "8192"
-
-runtimeClassName: ""
-
-probes:
-  startup:
-    path: /health
-    port: 8000
-    failureThreshold: 120
-    periodSeconds: 30
-    initialDelaySeconds: 60
-    timeoutSeconds: 30
-  liveness:
-    path: /health
-    port: 8000
-    failureThreshold: 5
-    periodSeconds: 30
-    initialDelaySeconds: 600
-    timeoutSeconds: 10
-
-userspace:
-  appData: /olares/rootfs/userspace/pvc-userspace-aimighty-hh1h3chfhnoebc1y

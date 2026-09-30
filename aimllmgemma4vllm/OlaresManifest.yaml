@@ -1,88 +1,216 @@
----
 olaresManifest.version: '0.12.0'
 olaresManifest.type: app
 apiVersion: 'v3'
-
-workloadReplicas:
-  aimllmgemma4vllm: 1
-
 metadata:
   name: aimllmgemma4vllm
-  icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
-  description: Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision
+  icon: https://raw.githubusercontent.com/bayerhazard/aimighty-market/main/icons/aimllmgemma4vllm.png
+  description: "Gemma-4-12B (AWQ-INT4) served with vLLM."
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.9.2'
+  version: '26.9.4'
   categories:
-    - AI
-    - Vision
+  - AI
+  - models
+  tags:
+  - llm
+sharedEntrances:
+  - name: aimllmgemma4vllm
+    host: sharedentrances-api
+    port: 0
+    title: AIM Gemma 4 26B A4B
+    invisible: true
+    authLevel: internal
+    icon: https://raw.githubusercontent.com/bayerhazard/aimighty-market/main/icons/aimllmgemma4vllm.png
 entrances:
   - name: aimllmgemma4vllm
-    port: 8000
+    port: 8090
     host: aimllmgemma4vllm
     title: AIM Gemma 4 26B A4B
-    icon: https://raw.githubusercontent.com/bayerhazard/aimighty-llmgemma4vllm/main/icon.png
+    icon: https://raw.githubusercontent.com/bayerhazard/aimighty-market/main/icons/aimllmgemma4vllm.png
     openMethod: window
     authLevel: internal
+#   aimllmgemma4vllm — engine Deployment (== appid / Release.Name)
+#   llminit        — llm-init / entrance Deployment
+workloadReplicas:
+  aimllmgemma4vllm: 1
+  llminit: 1
 spec:
-  versionName: '26.9.2'
+  onlyAdmin: true
+  versionName: '26.9.4'
   upgradeDescription: |
-    Initial Release for AImighty Olares One
+    v26.9.4: Model Console rollout (llm-init v1.7.21, OpenAI API on port 8090, shared appCommon HF cache) for the AImighty Gemma stack. vLLM v0.29.0-cu129, 200K context, fp8 KV cache, vision (--limit-mm-per-prompt image:1/video:0), thinking + tools (gemma4 parsers). Existing entrance URL and custom route stay valid. Built for Olares 1.12.7.
   fullDescription: |
-    Gemma 4 26B A4B — multimodal LLM (text + image) with QAT-AWQ-INT4 quantization on vLLM.
+    **Model Overview**
+    Gemma 4 26B A4B is an instruction-tuned vision-language model from Google's Gemma 4 family (Mixture-of-Experts, ~4B active parameters). It supports multimodal understanding, thinking, tool calling, and vision. This app serves the `AWQ-INT4` quantized weights from `cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4` via vLLM.
 
-    **Model**
-    cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 (QAT + AWQ INT4, ~16 GB).
-    200K token context. Multimodal (text + image, no video).
+    **Preset Configuration**
+    - Model: `cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4`
+    - Capabilities: thinking, tools, vision
+    - Engine args: `--max-model-len 200000 --gpu-memory-utilization 0.96 --kv-cache-dtype fp8 --enable-prefix-caching --enable-auto-tool-choice --tool-call-parser gemma4 --reasoning-parser gemma4`
+    - Required GPU memory: one RTX 5090 (exclusive)
 
-    **Inference Engine**
-    vLLM stable v0.29.0-cu129 with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
-    fp8 KV-Cache (all layers). CUDAGraphs + torch.compile.
-    Native hybrid SWA: 5 full-attention layers for long context, 25 sliding-window layers bounded.
-    GPU VRAM: ~22.5 GB.
+    **How It Works**
+    Model Console (llm-init) downloads the model into the shared appCommon HF cache, then vLLM starts serving it; llm-init proxies the OpenAI API on port 8090.
 
-    **Performance (RTX 5090 Blackwell)**
-    - 200K token context
-    - ~137 tok/s generation
-    - Needle Haystack: 25/25 (100%, incl. 131K/190K)
-    - Agentic Tool-Calling: 9/9 (100%)
+    **Stack**
+    - **vLLM** (port 8000): runs the model and serves API requests
+    - **Model Console** (port 8090): downloads the model, shows progress, provides the OpenAI API
 
     **API**
-    OpenAI-compatible: /v1/chat/completions, /v1/models, /health.
-    Tool Calling via --enable-auto-tool-choice + --tool-call-parser gemma4.
-    Reasoning via --reasoning-parser gemma4 + --default-chat-template-kwargs enable_thinking.
+    OpenAI-compatible: /v1/chat/completions, /v1/models (port 8090).
 
-    **Resource Usage**
-    GPU: ~22.5 GB VRAM (RTX 5090, 24 GB)
-    RAM: 24-40 GB
-    Disk: 50 GB (model download ~16 GB + cache)
-    CPU: 4-16 cores
-
+    **Model Storage**
+    All model files are stored in a shared folder at `appCommon/huggingface`, mounted as `/cache/hf/hub`.
   developer: Aimighty
   website: https://github.com/bayerhazard/aimighty-llmgemma4vllm
   sourceCode: https://github.com/bayerhazard/aimighty-llmgemma4vllm
+  submitter: Olares
   locale:
     - en-US
+    - zh-CN
+    - de-DE
+    - es-ES
+    - it-IT
+    - fr-FR
+    - ja-JP
+  license:
+    - text: Gemma Terms of Use
+      url: https://ai.google.dev/gemma/terms
+
+  # Exclusive-GPU app (cloud-native vLLM). Flat v3 resource envelope with
+  # requiredGpu:1 -> nvidia.com/gpu:1 (no accelerator[] / no HAMi nvidia.com/gpumem,
+  # which breaks Olares 1.12.7 stop/suspend). supportArch includes arm64 for gb10.
   supportArch:
     - amd64
-  requiredCpu: 4
-  requiredMemory: 24Gi
-  limitedCpu: 16
-  limitedMemory: 40Gi
-  requiredDisk: 50Gi
+    - arm64
+  requiredCpu: "4"
+  limitedCpu: "16"
+  requiredMemory: "24Gi"
+  limitedMemory: "40Gi"
+  requiredDisk: 50Mi
+  limitedDisk: 500Gi
   requiredGpu: 1
 permission:
+  appCache: true
   appData: true
-envs:
-  - envName: HF_TOKEN
-    required: false
-    applyOnChange: true
-    valueFrom:
-      envName: OLARES_USER_HUGGINGFACE_TOKEN
+  appCommon: true
 options:
-  apiTimeout: 3600
+  apiTimeout: 0
+  LLMGatewaySupported: true
+  allowMultipleInstall: false
+  shared: true
+  templateOnly: false
   dependencies:
     - name: olares
       version: '>=1.12.6-0'
       type: system
-  allowMultipleInstall: false
+envs:
+  # Model is preset for this app; these values are fixed and not user-editable.
+  - envName: MODEL_SOURCE        # example: hf://Qwen/Qwen3.5-2B
+    required: true
+    type: string
+    editable: false
+    applyOnChange: false
+    default: "hf://cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4"
+    description: "Example: hf://Qwen/Qwen3.5-2B. The HuggingFace source to download your model. Use a repo with `.safetensors` weights. Optionally append `--include <file>` or `--revision <sha>`."
+    regex: "^hf://"
+  - envName: MODEL_NAME          # example: Qwen/Qwen3.5-2B
+    required: true
+    type: string
+    editable: false
+    applyOnChange: false
+    default: "cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4"
+    description: "Example: Qwen/Qwen3.5-2B. The name of your model — use the string after `hf://` in MODEL_SOURCE. This is also used as the OpenAI alias and vLLM `--model`."
+  - envName: MODEL_MODE
+    required: true
+    type: string
+    editable: false
+    applyOnChange: false
+    default: "chat"
+    options:
+    - title: Chat
+      value: chat
+    - title: Embedding
+      value: embedding
+  - envName: MODEL_SUPPORTS
+    required: true
+    type: string
+    editable: false
+    applyOnChange: false
+    default: "thinking,tools,vision"
+    multiSelect: true
+    splitter: ","
+    options:
+    - title: Vision
+      value: vision
+    - title: Tools
+      value: tools
+    - title: Thinking
+      value: thinking
+    - title: None
+      value: none
+    description: "The model capabilities. Pick what your model supports. If no extra capabilities, pick None."
+  - envName: ENGINE_ARGS         # stability-first example for quantized Ornith 9B on 24GB: --max-model-len 131072 --gpu-memory-utilization 0.92 --tensor-parallel-size 1 --max-num-batched-tokens 4096 --kv-cache-dtype fp8 --quantization compressed-tensors --language-model-only --reasoning-parser qwen3 --enable-auto-tool-choice --tool-call-parser qwen3_xml --trust-remote-code --enforce-eager
+    required: true
+    default: "--max-model-len 200000 --gpu-memory-utilization 0.96 --tensor-parallel-size 1 --max-num-batched-tokens 8192 --kv-cache-dtype fp8 --enable-prefix-caching --enable-auto-tool-choice --tool-call-parser gemma4 --reasoning-parser gemma4"
+    type: string
+    editable: true
+    applyOnChange: true
+    description: "Flags only — do not prefix with ENGINE_ARGS=. Example: --max-model-len 131072 --gpu-memory-utilization 0.92 .... On Spark (nvidia-gb10), use the same style; the chart does not rewrite --gpu-memory-utilization (visible CUDA memory is capped by VLLM_REQUIRED_GPU_MEMORY via gpu-inject)."
+  - envName: LOG_LEVEL
+    required: false
+    type: string
+    editable: true
+    applyOnChange: true
+    default: "info"
+    options:
+    - title: Debug
+      value: debug
+    - title: Info
+      value: info
+    - title: Warn
+      value: warn
+    - title: Error
+      value: error
+  - envName: HF_ENDPOINT
+    required: false
+    applyOnChange: true
+    valueFrom:
+      envName: OLARES_SYSTEM_HUGGINGFACE_SERVICE
+  - envName: HF_TOKEN
+    required: false
+    applyOnChange: true
+    valueFrom:
+      envName: OLARES_SYSTEM_HUGGINGFACE_TOKEN
+  - envName: VLLM_CPU_REQUEST    # default: 1060m
+    required: true
+    default: "1060m"
+    type: string
+    editable: false
+    applyOnChange: false
+  - envName: VLLM_MEMORY_REQUEST # sum with llm-init <= requiredMemory 7Gi
+    required: true
+    default: "6Gi"
+    type: string
+    editable: false
+    applyOnChange: false
+  - envName: VLLM_CPU_LIMIT      # default: 6
+    required: true
+    default: "6"
+    type: string
+    editable: false
+    applyOnChange: false
+  - envName: VLLM_MEMORY_LIMIT # 30Gi + llm-init 2Gi <= limitedMemory 32Gi
+    required: true
+    default: "30Gi"
+    type: string
+    editable: false
+    applyOnChange: false
+  - envName: VLLM_REQUIRED_GPU_MEMORY  # GPU modes: 8Gi/8192/8192Mi -> bare-MiB gpumem; cpu: ignored
+    required: true
+    type: string
+    editable: false
+    applyOnChange: false
+    default: "23Gi"
+    description: "Example: `8Gi`, `8192`, or `8192Mi`. GPU memory required for the model. On GPU modes, gpu-inject caps visible CUDA memory to this value."
+    regex: "^[0-9]+(Gi|Mi)?$"
