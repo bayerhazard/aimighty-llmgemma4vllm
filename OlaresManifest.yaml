@@ -4,10 +4,10 @@ apiVersion: 'v3'
 metadata:
   name: aimllmgemma4vllm
   icon: https://raw.githubusercontent.com/bayerhazard/aimighty-market/main/icons/aimllmgemma4vllm.png
-  description: "Gemma-4-12B (AWQ-INT4) served with vLLM."
+  description: "Gemma 4 26B A4B multimodal via vLLM — QAT-AWQ INT4, 200K context, vision"
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.9.7'
+  version: '26.10.1'
   categories:
   - AI
   - models
@@ -36,31 +36,39 @@ workloadReplicas:
   llminit: 1
 spec:
   onlyAdmin: true
-  versionName: '26.9.7'
+  versionName: '26.10.1'
   upgradeDescription: |
-    v26.9.7: vLLM engine REVERT v0.30.0-cu129 -> v0.24.0-cu129 (Console-Standard). v0.30.0-cu129 ist defekt: der Import von transformers scheitert an 'RuntimeError: operator torchvision::nms does not exist' (torchvision/torch-ABI-Bug im Image) -> Engine startet nicht. Testbericht in docs/update-gemma4-26b.md. Model Console (llm-init v1.7.21), 200K Kontext, fp8 KV cache, vision, thinking + tools (gemma4 parsers) unveraendert. Hinweis: Der shared HF-Cache (JuiceFS appCommon) trunkierte den Modell-Download (10.07 GB bzw. 0.80 GB von 17.19 GB) -> Modell muss vor Nutzung sauber neu geladen werden. Built for Olares 1.12.7.
+    v26.10.1 Release for AImighty Assistent 1.1
+    v26.9.1 Initial Release for AImighty Assistent
   fullDescription: |
-    **Model Overview**
-    Gemma 4 26B A4B is an instruction-tuned vision-language model from Google's Gemma 4 family (Mixture-of-Experts, ~4B active parameters). It supports multimodal understanding, thinking, tool calling, and vision. This app serves the `AWQ-INT4` quantized weights from `cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4` via vLLM.
+    Gemma 4 26B A4B — multimodal LLM (text + image) with QAT-AWQ-INT4 quantization on vLLM.
 
-    **Preset Configuration**
-    - Model: `cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4`
-    - Capabilities: thinking, tools, vision
-    - Engine args: `--max-model-len 200000 --gpu-memory-utilization 0.96 --kv-cache-dtype fp8 --enable-prefix-caching --enable-auto-tool-choice --tool-call-parser gemma4 --reasoning-parser gemma4`
-    - Required GPU memory: one RTX 5090 (exclusive)
+    **Model**
+    cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4 (QAT + AWQ INT4, ~16 GB).
+    200K token context. Multimodal (text + image, no video).
 
-    **How It Works**
-    Model Console (llm-init) downloads the model into the shared appCommon HF cache, then vLLM starts serving it; llm-init proxies the OpenAI API on port 8090.
+    **Inference Engine**
+    vLLM stable v0.24.0-cu129 with triton_attn backend. CUDA 12.9 (RTX 5090 Blackwell).
+    fp8 KV-Cache (all layers). CUDAGraphs + torch.compile. Model Runner V2.
+    Native hybrid SWA: 5 full-attention layers for long context, 25 sliding-window layers bounded.
+    GPU VRAM: ~22.5 GB.
 
-    **Stack**
-    - **vLLM** (port 8000): runs the model and serves API requests
-    - **Model Console** (port 8090): downloads the model, shows progress, provides the OpenAI API
+    **Performance (RTX 5090 Blackwell)**
+    - 200K token context
+    - ~137 tok/s generation
+    - Needle Haystack: 25/25 (100%, incl. 131K/190K)
+    - Agentic Tool-Calling: 9/9 (100%)
 
     **API**
-    OpenAI-compatible: /v1/chat/completions, /v1/models (port 8090).
+    OpenAI-compatible: /v1/chat/completions, /v1/models, /health.
+    Tool Calling via --enable-auto-tool-choice + --tool-call-parser gemma4.
+    Reasoning via --reasoning-parser gemma4 + --default-chat-template-kwargs enable_thinking.
 
-    **Model Storage**
-    All model files are stored in a shared folder at `appCommon/huggingface`, mounted as `/cache/hf/hub`.
+    **Resource Usage**
+    GPU: ~22.5 GB VRAM (RTX 5090, 24 GB)
+    RAM: 24-40 GB
+    Disk: 50 GB (model download ~16 GB + cache)
+    CPU: 4-16 cores
   developer: Aimighty
   website: https://github.com/bayerhazard/aimighty-llmgemma4vllm
   sourceCode: https://github.com/bayerhazard/aimighty-llmgemma4vllm
