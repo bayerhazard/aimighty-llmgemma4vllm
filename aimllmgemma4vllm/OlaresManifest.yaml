@@ -7,7 +7,7 @@ metadata:
   description: "Gemma-4-12B (AWQ-INT4) served with vLLM."
   appid: aimllmgemma4vllm
   title: AIM Gemma 4 26B A4B
-  version: '26.9.5'
+  version: '26.9.6'
   categories:
   - AI
   - models
@@ -36,9 +36,9 @@ workloadReplicas:
   llminit: 1
 spec:
   onlyAdmin: true
-  versionName: '26.9.5'
+  versionName: '26.9.6'
   upgradeDescription: |
-    v26.9.5: vLLM engine v0.24.0-cu129 -> v0.30.0-cu129 (Stable, 22.09.). Bringt Gemma4-Fix #53147 (Triton-Sliding-Window-Tile-Pruning fuer Multimodal-Prefill), Gemma4-Korrekturen #54917/#55864 (Fine-tuned Checkpoints ohne KV-Projektionen auf Shared-Layern), Model-Runner-V2 MTP unter FULL CUDA graphs (#46994) + EAGLE3-Drafts (#50514), B12X-Paged-Attention fuer SM120. Model Console (llm-init v1.7.21), 200K Kontext, fp8 KV cache, vision, thinking + tools (gemma4 parsers) unveraendert. Built for Olares 1.12.7.
+    v26.9.6: vLLM engine REVERT v0.30.0-cu129 -> v0.24.0-cu129 (Console-Standard). v0.30.0-cu129 ist defekt: der Import von transformers scheitert an 'RuntimeError: operator torchvision::nms does not exist' (torchvision/torch-ABI-Bug im Image) -> Engine startet nicht. Testbericht in docs/update-gemma4-26b.md. Model Console (llm-init v1.7.21), 200K Kontext, fp8 KV cache, vision, thinking + tools (gemma4 parsers) unveraendert. Hinweis: Der shared HF-Cache (JuiceFS appCommon) trunkierte den Modell-Download (10.07 GB bzw. 0.80 GB von 17.19 GB) -> Modell muss vor Nutzung sauber neu geladen werden. Built for Olares 1.12.7.
   fullDescription: |
     **Model Overview**
     Gemma 4 26B A4B is an instruction-tuned vision-language model from Google's Gemma 4 family (Mixture-of-Experts, ~4B active parameters). It supports multimodal understanding, thinking, tool calling, and vision. This app serves the `AWQ-INT4` quantized weights from `cyankiwi/gemma-4-26B-A4B-it-qat-AWQ-INT4` via vLLM.
