@@ -219,3 +219,25 @@ spec:
       port: 80
       targetPort: 8090
   type: ClusterIP
+---
+# Client entrance service. Keeps the historical entrance name/host
+# "aimllmgemma4vllm" (so existing route ids / custom domains stay valid) but
+# routes it to llm-init :8090 — the Model Console UI and the OpenAI-compatible
+# /v1 API (which reverse-proxies the engine on vllm:8000). REQUIRED: the
+# Olares app-service resolves the app entrance to a Service of this name and
+# otherwise loops forever in "initializing" (DNS lookup ...:8090 no such host).
+apiVersion: v1
+kind: Service
+metadata:
+  name: aimllmgemma4vllm
+  namespace: {{ .Release.Namespace }}
+  labels:
+    io.kompose.service: llm-init
+spec:
+  selector:
+    io.kompose.service: llm-init
+  ports:
+    - name: http
+      port: 8090
+      targetPort: 8090
+  type: ClusterIP
