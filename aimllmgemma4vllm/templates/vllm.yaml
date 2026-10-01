@@ -73,7 +73,7 @@ spec:
             defaultMode: 0555
       containers:
         - name: vllm
-          image: docker.io/vllm/vllm-openai:v0.24.0-cu129
+          image: docker.io/vllm/vllm-openai:v0.30.0-cu129
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "/llm-init/wrappers/vllm.sh"]
           env:
